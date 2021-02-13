@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import CustomTable from "../../../../partials/content/CustomTable";
+import CustomTable from "../../../../partials/content/custom-components/CustomTable";
 import service from "../../service";
 import { Container, CssBaseline, LinearProgress } from "@material-ui/core";
 import ReactIf from "../../../../helpers/ReactIf";

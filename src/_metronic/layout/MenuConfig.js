@@ -239,20 +239,45 @@ export default {
             submenu: [
               {
                 title: "Lista de Facturas",
-                page: "#",
+                page: "billing/list",
               },
               {
                 title: "Nueva Factura",
-                page: "#",
+                page: "billing",
               },
               {
                 title: "Editar Factura",
-                page: "#",
+                page: "billing",
               },
             ],
           },
         ],
       },
+      { section: "Inventario" },
+      {
+        title: "Productos",
+        root: true,
+        bullet: "dot",
+        icon: "flaticon2-browser-2",
+        submenu: [
+          {
+            title: "Producto",
+            bullet: "dot",
+            submenu: [
+              {
+                title: "Lista de productos",
+                page: "product/list",
+              },
+              {
+                title: "Editar Producto",
+                page: "product/form",
+              },
+            ],
+          },
+        ],
+      },
+
     ],
   },
+  
 };

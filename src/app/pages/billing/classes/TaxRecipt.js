@@ -1,5 +1,5 @@
-import TaxRecieptGovModel from "../../../../models/tax.reciept.gov.model";
 import _helpers from "../../../helpers/_helpers";
+import TaxRecieptGovModel from "../../../../models/tax.reciept.gov.model";
 
 
 export default class TaxRecipt {

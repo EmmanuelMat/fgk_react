@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import {
   makeStyles,
   Table,
@@ -13,7 +12,6 @@ import {
 } from "@material-ui/core";
 import _ from "lodash";
 import "./styles.scss";
-import { Form } from "react-bootstrap";
 
 // Icons
 import RevertIcon from "@material-ui/icons/NotInterestedOutlined";

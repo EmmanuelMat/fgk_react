@@ -1,16 +1,16 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Form, Button, InputGroup } from "react-bootstrap";
 import { Grid, Paper, makeStyles } from "@material-ui/core";
-import InputFields from "../../../../partials/content/InputFields";
-import Dropdown from "../../../../partials/content/Dropdown";
+import InputFields from "../../../../partials/content/custom-components/InputFields";
+import Dropdown from "../../../../partials/content/custom-components/Dropdown";
 import SearchIcon from "@material-ui/icons/Search";
 import PrintIcon from "@material-ui/icons/Print";
 import SaveIcon from "@material-ui/icons/Save";
 import PrintOutlinedIcon from "@material-ui/icons/PrintOutlined";
-import CustomModal from "../../../../partials/content/CustomModal";
-import CustomTable from "../../../../partials/content/CustomTable";
+import CustomModal from "../../../../partials/content/custom-components/CustomModal";
+import CustomTable from "../../../../partials/content/custom-components/CustomTable";
 import _helpers from "../../../../helpers/_helpers";
-import Validation from "../../../../partials/content/Validation";
+import validation from "../../../../partials/content/validation";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -44,6 +44,7 @@ export default function TopForm({
   reset,
   setNotesProps,
   notesProps,
+  setDiscountPorcentage
 }) {
   const classes = useStyles();
   const [clientName, setclientName] = useState("");
@@ -86,8 +87,7 @@ export default function TopForm({
     setclientAddress(data.address);
     setClient(data)
   };
-  const validateForm = new Validation();
-  validateForm.validateForm();
+   validation()
 
   const printBill = async () => {
     const save = await saveBll();
@@ -109,12 +109,10 @@ export default function TopForm({
       cNumber: clientTel.toString(),
       address: clientAddress,
     };
-    console.log(data);
     setClientIfEmpty(data);
     switch (e.nativeEvent.submitter.getAttribute("id")) {
       case "save":
         saveBll();
-
         break;
       case "big":
         printBill();
@@ -126,6 +124,10 @@ export default function TopForm({
     reset();
   };
 
+  useEffect(() => {
+    setDiscountPorcentage((discount *100)/price.total)
+   
+  }, [discount])
   const columns = [
     { label: "Codigo", value: "code" },
     { label: "Nombre", value: "name" },

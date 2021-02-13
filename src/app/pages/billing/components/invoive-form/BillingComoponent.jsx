@@ -3,12 +3,13 @@ import { Container, CssBaseline, LinearProgress } from "@material-ui/core";
 import TopForm from "./TopForm";
 import service from "../../service";
 import _ from "lodash";
-import _helpers from "../../../../helpers/_helpers";
 import TaxRecipt from "../../classes/TaxRecipt";
 import Bill from "../../classes/Bill";
 import TableComponent from "./TableComponent";
+import _helpers from "../../../../helpers/_helpers";
 import RecieptDetailsModel from "../../../../../models/reciept.details.model";
 import ReactIf from "../../../../helpers/ReactIf";
+import ClienModel from "../../../../../models/client.model";
 
 const initState = {
   taxRecieps: [],
@@ -23,7 +24,10 @@ const initState = {
 };
 
 export default class BillingComoponent extends Component {
-  state = initState;
+  constructor() {
+    super();
+    this.state = initState;
+  }
 
   async componentDidMount() {
     this.getAll();
@@ -39,7 +43,7 @@ export default class BillingComoponent extends Component {
       taxRecieps: taxRecieps.reverse(),
       lastReciept: lastReciept.data.billNumer + 1,
       bill: new Bill(),
-      loading: false
+      loading: false,
     });
   };
 
@@ -108,6 +112,7 @@ export default class BillingComoponent extends Component {
       ...this.state.bill.details[index],
       [dKey]: parseFloat(row[key]),
     };
+    
     newElement = new RecieptDetailsModel(newElement);
     this.state.bill.details.splice(index, 1, newElement);
     this.setState({ recieptTable: newRows });
@@ -116,21 +121,16 @@ export default class BillingComoponent extends Component {
 
   setDiscount = (discount) => {
     this.setState({ discount });
-    this.state.bill.discount = discount;
   };
 
   setClient = (data) => {
-    this.state.bill.client.name = data.name;
-    this.state.bill.client.taxId = data.taxId;
-    this.state.bill.client.pNumber = data.pNumber;
-    this.state.bill.client.cNumber = data.cNumber;
-    this.state.bill.client.address = data.address;
+    this.state.bill.client = new ClienModel(data)
   };
 
   setNotes = (val) => {
     this.state.bill.notes = val;
     console.log(this.state.bill.notes);
-  }
+  };
 
   reset = () => {
     this.setState(initState, this.getAll);
@@ -140,38 +140,39 @@ export default class BillingComoponent extends Component {
       <>
         <CssBaseline />
         <Container fixed>
-            <ReactIf condition={!this.state.loading} Or={<LinearProgress />}>
-              <TopForm
-                onTaxReciepsChange={this.onTaxReciepsChange}
-                taxRecieps={this.state.taxRecieps}
-                lastReciept={this.state.lastReciept}
-                getClient={this.getClient}
-                products={this.state.products}
-                getProducts={this.getProducts}
-                onProductSelect={this.onProductSelect}
-                taxReciept={this.state.taxRecieptId}
-                setDiscount={this.setDiscount}
-                discount={this.state.discount}
-                price={{
-                  total: this.state.bill.totalPrice,
-                  subTotal: this.state.bill.subTotal,
-                  tax: this.state.bill.tax,
-                }}
-                saveBll={this.state.bill.save}
-                setClientIfEmpty={this.setClient}
-                printReciept={service.printReciept}
-                setIsCredit={this.state.bill.setIsCredit}
-                setClient={this.state.bill.setclient}
-                reset={this.reset}
-                setNotesProps={this.setNotes}
-                notesProps={this.state.bill.notes}
-              />
-  
-          <TableComponent
-            onTableCellChange={this.onTableCellChange}
-            data={this.state.recieptTable}
-            deleteRow={this.deleteFromBill}
-          />
+          <ReactIf condition={!this.state.loading} Or={<LinearProgress />}>
+            <TopForm
+              onTaxReciepsChange={this.onTaxReciepsChange}
+              taxRecieps={this.state.taxRecieps}
+              lastReciept={this.state.lastReciept}
+              getClient={this.getClient}
+              products={this.state.products}
+              getProducts={this.getProducts}
+              onProductSelect={this.onProductSelect}
+              taxReciept={this.state.taxRecieptId}
+              setDiscount={this.setDiscount}
+              discount={this.state.discount}
+              setDiscountPorcentage={(val) => this.state.bill.discount =val}
+              price={{
+                total: this.state.bill.totalPrice,
+                subTotal: this.state.bill.subTotal,
+                tax: this.state.bill.tax,
+              }}
+              saveBll={this.state.bill.save}
+              setClientIfEmpty={this.setClient}
+              printReciept={service.printReciept}
+              setIsCredit={this.state.bill.setIsCredit}
+              setClient={this.state.bill.setclient}
+              reset={this.reset}
+              setNotesProps={this.setNotes}
+              notesProps={this.state.bill.notes}
+            />
+
+            <TableComponent
+              onTableCellChange={this.onTableCellChange}
+              data={this.state.recieptTable}
+              deleteRow={this.deleteFromBill}
+            />
           </ReactIf>
         </Container>
       </>

@@ -1,9 +1,8 @@
 import React from "react";
-import { Redirect, Route, Switch, withRouter } from "react-router-dom";
-import BillComponent from "../bill.reciept/components/BillComponent";
-import Example2 from "../bill.reciept/components/Printer";
+import { Route, Switch } from "react-router-dom";
 import BillingScreen from "./screen/BillingScreen";
 import InvoicesList from "./screen/InvoicesList";
+
 const bill = {
   createDate: "2021-01-18T22:02:30.289Z",
   payDate: "2021-01-18T19:26:30.178Z",
@@ -141,14 +140,17 @@ const bill = {
 };
 
 
-export const BillingRouter = withRouter(({ history }) => {
+
+export const BillingRouter = () => {
   return (
     <div>
-      {/* <BillComponent bill={bill} /> */}
+      {/* <InvoiceComponent bill={bill} /> */}
+
+
       <Switch>
-        <Route  path="/" component={BillingScreen} />
-        {/* <Route  path="/" component={InvoicesList} /> */}
+        <Route exact path="/billing" component={BillingScreen} />
+        <Route  path="/billing/list" component={InvoicesList} />
       </Switch>
     </div>
   );
-});
+};

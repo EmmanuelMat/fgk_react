@@ -1,11 +1,7 @@
 
-export default class Validation {
-    constructor() {
-        this.forms = document.querySelectorAll('.needs-validation');
-    }
-
-    validateForm() {
-        Array.prototype.slice.call(this.forms).forEach((form) => {
+export default () => {
+     const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach((form) => {
             form.addEventListener('submit', (event) => {
               if (!form.checkValidity()) {
                 event.preventDefault();
@@ -15,4 +11,3 @@ export default class Validation {
             }, false);
           });
     }
-}

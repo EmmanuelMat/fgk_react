@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import ReactIf from "../../helpers/ReactIf";
+import ReactIf from "../../../helpers/ReactIf";
 export default function CustomModal({ size, openModalBtn, saveBtn, save, children, title }) {
   const [show, setShow] = useState(false);
 

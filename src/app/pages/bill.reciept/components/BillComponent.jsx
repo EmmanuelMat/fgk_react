@@ -8,7 +8,7 @@ class BillComponent extends React.Component {
   render() {
     const { bill } = this.props;
     const details = _.map(bill.details, (item) => {
-      item.sellPrice = item.sellPrice.toFixed(2);
+      item.sellPrice = parseFloat( item.sellPrice).toFixed(2);
       item.total = item.sellPrice * item.quantity;
       return item;
     });

@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import ReactToPrint from "react-to-print";
 import ReactIf from "../../../helpers/ReactIf";
 import Bill from "../../billing/classes/Bill";
-import BillComponent from "./BillComponent";
+import BillComponent from "./Invoice";
 
 export default class Example2 extends React.Component {
   constructor() {
