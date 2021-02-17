@@ -3,7 +3,7 @@ import { Modal, Button } from "react-bootstrap";
 
 
 
-export default function CustomModal({
+export default React.forwardRef(function CustomModal({
   size,
   openModalBtn,
   primaryBtn,
@@ -12,7 +12,7 @@ export default function CustomModal({
   title,
   onClose,
   showModalFormOutSide,
-}) {
+}, ref) {
   const [show, setShow] = useState(false);
 
   const handleClose = () => {
@@ -34,7 +34,7 @@ export default function CustomModal({
         </Modal.Header>
         <Modal.Body>{children}</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button ref={ref} variant="secondary" onClick={handleClose}>
             Close
           </Button>
 
@@ -65,4 +65,4 @@ export default function CustomModal({
       </Modal>
     </>
   );
-}
+})
