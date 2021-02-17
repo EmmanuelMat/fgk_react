@@ -8,6 +8,7 @@ const URLS = {
   TAX_RECIPT_GOV: "/taxrecieptgov",
   RECIEPT_LAST: "/reciept/last",
   RECIEPT: "/reciept",
+  RECIEPT: "/reciept",
   RECIEPT_BY_ID: "/reciept/byid",
   TAX: "/tax",
   USER: "/user",

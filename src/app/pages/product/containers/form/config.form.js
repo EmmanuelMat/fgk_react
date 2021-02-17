@@ -1,12 +1,19 @@
 import { TYPE } from "../../../../constants/contants"
-
-export const genConfig = (options) => [
+export const genConfig = (options, values = {}) => [
   {
     name: "name",
     type: TYPE.TEXT,
     label: "Nombre",
     width: "48%",
-    ariaDescribedby: "emailHelp"
+    ariaDescribedby: "Name",
+    require: true,
+  },
+  {
+    name: "description",
+    type: TYPE.TEXT,
+    label: "Descripcion",
+    width: "48%",
+    ariaDescribedby: "emailHelp",
   },
   {
     type: TYPE.SELECT,
@@ -21,7 +28,7 @@ export const genConfig = (options) => [
     type: TYPE.SELECT,
     name: "department",
     label: "Departamento",
-    width: "98%",
+    width: "48%",
     ariaDescribedby: "Departamento",
     options: options["departments"],
   },
@@ -31,6 +38,7 @@ export const genConfig = (options) => [
     label: "Costo",
     width: "48%",
     ariaDescribedby: "Costo",
+    require: true,
   },
   {
     type: TYPE.NUMBER,
@@ -38,6 +46,7 @@ export const genConfig = (options) => [
     label: "Precio",
     width: "48%",
     ariaDescribedby: "Precio",
+    require: true,
   },
 
   {
@@ -46,6 +55,7 @@ export const genConfig = (options) => [
     label: "Unidad",
     width: "48%",
     ariaDescribedby: "Unidad",
+    require: true,
   },
 
   {
@@ -60,7 +70,6 @@ export const genConfig = (options) => [
     type: TYPE.CHECKBOX,
     name: "taxed",
     label: "Excempto",
-    width: "48%",
-    ariaDescribedby: "Check me out",
+    width: "20%",
   },
 ];

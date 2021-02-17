@@ -15,6 +15,7 @@ export default class TaxRecipt {
     let sequence = parseInt(this.sequence) + 1;
     sequence = this.pad(sequence.toString(), 7)
     return {
+      _id: this.taxReciept.Id,
       taxRecieptId: _helpers.genTaxtReciept(this.trg, sequence),
       sequence,
       isUsed: this.isUsed,

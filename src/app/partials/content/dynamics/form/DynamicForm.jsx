@@ -1,18 +1,18 @@
-import React from "react";
+import React, {useRef} from "react";
 import { connect } from "react-redux";
 import { useForm } from "../../../../utils/useForm";
 import validation from "../../validation";
 import { generateComponent } from "./InputGenerator";
 
-export const DynamicForm = ({ data, btn }) => {
-  const register = () => {
-    console.log(values);
-  };
+export const DynamicForm = ({editValues, data, btn, onSubmit }) => {
+
   validation();
-  const [values, handleChange, handleSubmit] = useForm(register);
+  const form = useRef()
+
+  const [values, handleChange, handleSubmit] = useForm(editValues, onSubmit);
   return (
     <div>
-      <form className={"needs-validation"} onSubmit={handleSubmit}>
+      <form ref={form}  className={"needs-validation"} onSubmit={handleSubmit}>
         <div className="d-flex flex-wrap">
           {generateComponent(data, values, handleChange)}
         </div>

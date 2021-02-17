@@ -1,8 +1,9 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
+import Bill from "./classes/Bill";
 import BillingScreen from "./screen/BillingScreen";
 import InvoicesList from "./screen/InvoicesList";
-
+import _ from "lodash";
 const bill = {
   createDate: "2021-01-18T22:02:30.289Z",
   payDate: "2021-01-18T19:26:30.178Z",
@@ -139,17 +140,12 @@ const bill = {
   __v: 0,
 };
 
-
-
 export const BillingRouter = () => {
   return (
     <div>
-      {/* <InvoiceComponent bill={bill} /> */}
-
-
       <Switch>
         <Route exact path="/billing" component={BillingScreen} />
-        <Route  path="/billing/list" component={InvoicesList} />
+        <Route path="/billing/list" component={InvoicesList} />
       </Switch>
     </div>
   );

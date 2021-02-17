@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   makeStyles,
   withStyles,
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: theme.palette.common.black,
+    backgroundColor: "#1A1A27",
     color: theme.palette.common.white,
   },
   body: {
@@ -40,30 +40,28 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-
 const CustomTable = ({ data, getData, onClick, columns }) => {
   const classes = useStyles();
-  const [page, setPage] = React.useState(data.count.pageNumber);
-  const [rowsPerPage, setRowsPerPage] = React.useState(data.count.pageSize);
-  const [filter, seFilter] = React.useState(data.count.pageSize);
+  const [page, setPage] = React.useState(parseInt(1));
+  const [rowsPerPage, setRowsPerPage] = React.useState(
+    parseInt(data.count.pageSize)
+  );
+  const [filter, seFilter] = React.useState(" ");
   function handleChangeRowsPerPage(event) {
-    setRowsPerPage(+event.target.value);
-    getData(page, +event.target.value, filter);
+    setRowsPerPage(parseInt(+event.target.value));
   }
 
   function handleChangePage(event, newPage) {
-    setPage(newPage);
-    getData(newPage, rowsPerPage, filter);
+    setPage(parseInt(newPage));
   }
 
   function handleFilter() {
-    fetch();
-  }
-
-  function fetch() {
     getData(page, rowsPerPage, filter);
   }
 
+  useEffect(() => {
+    getData(page, rowsPerPage, filter);
+  }, [page, rowsPerPage]);
 
   return (
     <div className={classes.root}>
@@ -91,31 +89,15 @@ const CustomTable = ({ data, getData, onClick, columns }) => {
             {data.data.map((row, i) => {
               return (
                 <TableRow hover onClick={(e) => onClick(row)} key={i}>
-                  {columns.map((cell, i) =>{ 
-                    const cell2 = Array.isArray(cell.value) ? row[cell.value[0]][cell.value[1]] : row[cell.value]
-                    return(
-                    <StyledTableCell key={i}>{cell2}</StyledTableCell>
-                  )})}
+                  {columns.map((cell, i) => {
+                    const cell2 = Array.isArray(cell.value)
+                      ? row[cell.value[0]][cell.value[1]]
+                      : row[cell.value];
+                    return <StyledTableCell key={i}>{cell2}</StyledTableCell>;
+                  })}
                 </TableRow>
               );
             })}
-            {/* {data.data.map((row, i) => {
-              return (
-                <TableRow hover onClick={(e) => onClick(row)} key={row.code}>
-                  <StyledTableCell component="th" scope="row">
-                    {row.code}
-                  </StyledTableCell>
-                  <StyledTableCell>{row.name}</StyledTableCell>
-                  <StyledTableCell>{row.unit}</StyledTableCell>
-                  <StyledTableCell>
-                    {_helpers.decimal2(row.cost)}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    {_helpers.decimal2(row.cost * 1.14)}
-                  </StyledTableCell>
-                </TableRow>
-              );
-            })} */}
           </TableBody>
         </Table>
         <TablePagination

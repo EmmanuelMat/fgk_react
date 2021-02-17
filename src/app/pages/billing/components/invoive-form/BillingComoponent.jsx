@@ -38,21 +38,26 @@ export default class BillingComoponent extends Component {
     const lastReciept = await service.getLastReciept();
     this.getProducts(null, null, null);
     taxRecieps = _helpers._select(taxRecieps.data, ["_id", "name"]);
-    this.onTaxReciepsChange(taxRecieps[taxRecieps.length - 1]._id);
+
     this.setState({
       taxRecieps: taxRecieps.reverse(),
       lastReciept: lastReciept.data.billNumer + 1,
-      bill: new Bill(),
+      bill: this.props.bill,
       loading: false,
     });
+    this.onTaxReciepsChangeHelper(taxRecieps)
   };
 
+  onTaxReciepsChangeHelper(taxRecieps) {
+    this.onTaxReciepsChange(taxRecieps[taxRecieps.length - 1]._id);
+  }
   onTaxReciepsChange = async (val) => {
     const lastTaxReciept = await service.getLastTaxReciept(val);
     const taxReciept = new TaxRecipt(lastTaxReciept.data);
     const taxRecieptId = taxReciept.createNewTaxRecipt();
     this.setState({ taxRecieptId });
     this.state.bill.settaxReciept(taxRecieptId);
+    console.log(taxRecieptId);
   };
 
   getClient = async (name, id, cb) => {
@@ -63,7 +68,7 @@ export default class BillingComoponent extends Component {
   };
   getProducts = async (pageNumber, pageSize, name) => {
     const products = await service.getProducts(pageNumber, pageSize, name);
-    const data = _helpers._select(products.data.model, [
+    const data = _helpers._select(products.data.data, [
       "code",
       "name",
       "cost",
@@ -81,28 +86,24 @@ export default class BillingComoponent extends Component {
       const product = data;
       product.quantity = 1;
       this.state.bill.setdetails(data);
+      this.props.settable([...this.props.table, product]);
       this.setState({
         selectedProduct: product,
-        recieptTable: this.state.recieptTable.concat(product),
       });
       this.state.bill.setprice();
     }
   };
 
   deleteFromBill = (data) => {
-    const index = _.findIndex(
-      this.state.recieptTable,
-      (x) => x.code === data.code,
-      0
-    );
+    const index = _.findIndex(this.props.table, (x) => x.code === data.code, 0);
     this.state.bill.removeDetails(data);
-    let newArray = this.state.recieptTable;
+    let newArray = this.props.table;
     newArray.splice(index, 1);
-    this.setState({ recieptTable: newArray });
+    this.props.settable([...newArray]);
   };
 
   onTableCellChange = (newRows, row, key) => {
-    const dKey = key === "cost" ? "sellPrice" : key;
+    const dKey = key === "price" ? "sellPrice" : key;
     const index = _.findIndex(
       this.state.bill.details,
       (x) => x.code === row.code,
@@ -112,10 +113,10 @@ export default class BillingComoponent extends Component {
       ...this.state.bill.details[index],
       [dKey]: parseFloat(row[key]),
     };
-    
+
     newElement = new RecieptDetailsModel(newElement);
     this.state.bill.details.splice(index, 1, newElement);
-    this.setState({ recieptTable: newRows });
+    this.props.settable([...newRows]);
     this.state.bill.setprice();
   };
 
@@ -124,16 +125,17 @@ export default class BillingComoponent extends Component {
   };
 
   setClient = (data) => {
-    this.state.bill.client = new ClienModel(data)
+    this.state.bill.client = new ClienModel(data);
   };
 
   setNotes = (val) => {
     this.state.bill.notes = val;
-    console.log(this.state.bill.notes);
   };
 
   reset = () => {
     this.setState(initState, this.getAll);
+    this.props.settable([]);
+    this.props.setbill(new Bill());
   };
   render() {
     return (
@@ -152,25 +154,17 @@ export default class BillingComoponent extends Component {
               taxReciept={this.state.taxRecieptId}
               setDiscount={this.setDiscount}
               discount={this.state.discount}
-              setDiscountPorcentage={(val) => this.state.bill.discount =val}
-              price={{
-                total: this.state.bill.totalPrice,
-                subTotal: this.state.bill.subTotal,
-                tax: this.state.bill.tax,
-              }}
-              saveBll={this.state.bill.save}
+              setDiscountPorcentage={(val) => (this.state.bill.discount = val)}
               setClientIfEmpty={this.setClient}
               printReciept={service.printReciept}
-              setIsCredit={this.state.bill.setIsCredit}
-              setClient={this.state.bill.setclient}
               reset={this.reset}
               setNotesProps={this.setNotes}
-              notesProps={this.state.bill.notes}
+              billData={this.props.bill}
             />
 
             <TableComponent
               onTableCellChange={this.onTableCellChange}
-              data={this.state.recieptTable}
+              data={this.props.table}
               deleteRow={this.deleteFromBill}
             />
           </ReactIf>

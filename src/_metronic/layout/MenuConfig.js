@@ -245,10 +245,6 @@ export default {
                 title: "Nueva Factura",
                 page: "billing",
               },
-              {
-                title: "Editar Factura",
-                page: "billing",
-              },
             ],
           },
         ],
@@ -269,7 +265,7 @@ export default {
                 page: "product/list",
               },
               {
-                title: "Editar Producto",
+                title: "Nuevo Producto",
                 page: "product/form",
               },
             ],

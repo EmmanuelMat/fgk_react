@@ -35,12 +35,18 @@ function saveBill(data) {
   return axios.post(urlsApiContant.URLS.RECIEPT, { ...data });
 }
 
+function updateBill(data) {
+  return axios.put(urlsApiContant.URLS.RECIEPT, { ...data });
+}
+
 function getBillById(id) {
   return axios.get(urlsApiContant.URLS.RECIEPT_BY_ID + "/" + id);
 }
 
-function getInvoices() {
-  return axios.get(urlsApiContant.URLS.RECIEPT);
+function getInvoices(pagenumber, pagesize, name) {
+  return axios.get(urlsApiContant.URLS.RECIEPT, {
+    params: { pagenumber, pagesize, name },
+  });
 }
 export default {
   getTaxReceipt,
@@ -51,5 +57,6 @@ export default {
   saveBill,
   getBillById,
   printReciept,
-  getInvoices
+  getInvoices,
+  updateBill
 };

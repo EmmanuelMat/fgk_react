@@ -12,9 +12,14 @@ export default function InputFields({
   required,
   onKeyDown,
   formatChars,
+  disabled,
+  alwaysShowMask,
+  maskChar
 }) {
   return (
     <InputMask
+      alwaysShowMask={alwaysShowMask}
+      maskChar={maskChar}
       onKeyDown={onKeyDown}
       required={required}
       mask={mask}
@@ -22,6 +27,7 @@ export default function InputFields({
       value={value}
       readOnly={readOnly}
       formatChars={formatChars}
+      disabled={disabled}
     >
       {(inputProps) => {
         return <Form.Control {...inputProps} />;

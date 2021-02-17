@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
 import FormScreen from "./screens/FormScreen";
+import ListScreen from "./screens/ListScreen";
 
 export default function ProductsRouter() {
   return (
@@ -10,7 +11,7 @@ export default function ProductsRouter() {
           <FormScreen />
         </Route>
         <Route path="/product/list">
-          Hola
+          <ListScreen />
         </Route>
       </Switch>
     </>

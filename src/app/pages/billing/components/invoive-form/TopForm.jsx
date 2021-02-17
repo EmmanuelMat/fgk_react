@@ -1,10 +1,9 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Form, Button, InputGroup } from "react-bootstrap";
-import { Grid, Paper, makeStyles } from "@material-ui/core";
+import { Grid, Paper, makeStyles, r } from "@material-ui/core";
 import InputFields from "../../../../partials/content/custom-components/InputFields";
 import Dropdown from "../../../../partials/content/custom-components/Dropdown";
 import SearchIcon from "@material-ui/icons/Search";
-import PrintIcon from "@material-ui/icons/Print";
 import SaveIcon from "@material-ui/icons/Save";
 import PrintOutlinedIcon from "@material-ui/icons/PrintOutlined";
 import CustomModal from "../../../../partials/content/custom-components/CustomModal";
@@ -12,7 +11,8 @@ import CustomTable from "../../../../partials/content/custom-components/CustomTa
 import _helpers from "../../../../helpers/_helpers";
 import validation from "../../../../partials/content/validation";
 import { useHistory } from "react-router-dom";
-
+import Printer from "../../../invoice/Printer";
+import CustomSwitch from "../../../../partials/content/custom-components/CustomSwitch";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -24,6 +24,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const payDateFunc = (date) => {
+  date = date ? new Date(date) : new Date();
+  return date.toISOString().substring(0, 10);
+};
+
 export default function TopForm({
   taxRecieps,
   onTaxReciepsChange,
@@ -32,34 +37,43 @@ export default function TopForm({
   products,
   getProducts,
   onProductSelect,
-  taxReciept,
-  saveBll,
-  setDiscount,
-  discount,
-  price,
+
   setClientIfEmpty,
   printReciept,
-  setIsCredit,
-  setClient,
   reset,
   setNotesProps,
-  notesProps,
-  setDiscountPorcentage
+  setDiscountPorcentage,
+  billData,
 }) {
+  const {
+    client,
+    payDate,
+    totalPrice,
+    subTotal,
+    tax,
+    save,
+    setIsCredit,
+    setclient,
+    taxReciept,
+  } = billData;
+  const printRef = useRef();
   const classes = useStyles();
-  const [clientName, setclientName] = useState("");
-  const [clientTaxId, setclientTaxid] = useState("");
-  const [clientTel, setclientTel] = useState("");
-  const [clientCode, setclientCode] = useState("");
-  const [clientAddress, setclientAddress] = useState("");
-  const [selectedDate, setSelectedDate] = useState(_helpers._date());
+  const [clientId, setclientId] = useState(client._id);
+  const [clientName, setclientName] = useState(client.name);
+  const [clientTaxId, setclientTaxid] = useState(client.taxId);
+  const [clientTel, setclientTel] = useState(client.pNumber);
+  const [clientCode, setclientCode] = useState(client.code);
+  const [clientAddress, setclientAddress] = useState(client.address);
+  const [selectedDate, setSelectedDate] = useState(payDateFunc(payDate));
+  const [discount, setdiscount] = useState(0);
   const history = useHistory();
   const [clientList, setClientList] = useState([]);
-  const [notes, setNotes] = useState(notesProps);
+  const [note, setNotes] = useState("");
   const handleDateChange = (date) => {
     setSelectedDate(date.nativeEvent.target.value);
     setIsCredit(date.nativeEvent.target.valueAsNumber);
   };
+  const [_id, set_id] = useState(null);
 
   const fetchClient = (value) => {
     setclientName(value);
@@ -75,34 +89,41 @@ export default function TopForm({
     if (clientList) client = clientList.find((item) => item.name === val);
     if (client && client._id) {
       setClientOnCode(client);
-      setClient(client);
+      setclient(client);
     }
   };
 
   const setClientOnCode = (data) => {
     setclientName(data.name);
+    setclientId(data._id);
     setclientTaxid(data.taxId);
     setclientTel(data.cNumber);
     setclientCode(data.code);
     setclientAddress(data.address);
-    setClient(data)
+    setclient(data);
   };
-   validation()
+  validation();
 
   const printBill = async () => {
-    const save = await saveBll();
-    history.push("/print", { _id: save.data._id });
+    const save = await saveHelper();
+    set_id(save.data._id);
   };
 
   const printReciept2 = async () => {
-    const save = await saveBll();
+    saveHelper();
     printReciept(save.data._id);
+    history.push("/billing");
+  };
+
+  const saveHelper = async () => {
+    const result = await save();
+    return result;
   };
   const submit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     const data = {
-      _id: null,
+      _id: clientId,
       name: clientName,
       taxId: clientTaxId.toString(),
       pNumber: clientTel.toString(),
@@ -112,7 +133,7 @@ export default function TopForm({
     setClientIfEmpty(data);
     switch (e.nativeEvent.submitter.getAttribute("id")) {
       case "save":
-        saveBll();
+        printBill();
         break;
       case "big":
         printBill();
@@ -121,13 +142,15 @@ export default function TopForm({
         printReciept2();
         break;
     }
-    reset();
   };
 
   useEffect(() => {
-    setDiscountPorcentage((discount *100)/price.total)
-   
-  }, [discount])
+    if (totalPrice > 0) {
+      setDiscountPorcentage((parseInt(discount) * 100) / parseInt(totalPrice));
+    } else {
+      setDiscountPorcentage(0);
+    }
+  }, [discount, totalPrice]);
   const columns = [
     { label: "Codigo", value: "code" },
     { label: "Nombre", value: "name" },
@@ -194,8 +217,12 @@ export default function TopForm({
                     <Form.Group controlId="formBasicPassword">
                       <Form.Label>Tipo de factura</Form.Label>
                       <Dropdown
-                        onChange={onTaxReciepsChange}
+                        defaultValue={taxReciept.taxReciept}
+                        onChange={({ nativeEvent }) =>
+                          onTaxReciepsChange(nativeEvent.target.value)
+                        }
                         data={taxRecieps}
+                        disabled={taxReciept._id}
                       />
                     </Form.Group>
                   </div>
@@ -219,8 +246,9 @@ export default function TopForm({
                     <Form.Label>Nombre del cliente.</Form.Label>
                     <InputGroup className="mb-3">
                       <Form.Control
+                        disabled={taxReciept._id}
                         type="text"
-                        value={clientName}
+                        value={clientName || ""}
                         onChange={(e) => fetchClient(e.target.value)}
                         required
                         list="data"
@@ -249,7 +277,7 @@ export default function TopForm({
                     <Form.Label>RNC/Cedula</Form.Label>
                     <Form.Control
                       type="text"
-                      value={clientTaxId}
+                      value={clientTaxId || ""}
                       onChange={(e) => {
                         setclientTaxid(e.target.value);
                       }}
@@ -274,7 +302,7 @@ export default function TopForm({
                     <Form.Group controlId="formBasicPassword">
                       <Form.Label>Direccion</Form.Label>
                       <Form.Control
-                        value={clientAddress}
+                        value={clientAddress || ""}
                         onChange={(e) => setclientAddress(e.target.value)}
                         as="textarea"
                         rows="4"
@@ -292,7 +320,7 @@ export default function TopForm({
                       <Form.Label>Telefono</Form.Label>
                       <InputFields
                         readOnly={false}
-                        value={clientTel}
+                        value={clientTel || ""}
                         onChange={(e) => {
                           setclientTel(e.target.value.replace(/-/g, ""));
                         }}
@@ -312,8 +340,9 @@ export default function TopForm({
                           if (nativeEvent.key === "Enter")
                             getClient(null, clientCode, setClientOnCode);
                         }}
+                        disabled={taxReciept._id}
                         readOnly={false}
-                        value={clientCode}
+                        value={clientCode || ""}
                         onChange={(e) => setclientCode(e.target.value)}
                         minLength={"5"}
                         maxLength={"5"}
@@ -365,7 +394,7 @@ export default function TopForm({
                       <Form.Control
                         type="text"
                         readOnly={true}
-                        value={taxReciept.taxRecieptId}
+                        value={taxReciept.taxRecieptId || ""}
                         required
                       />
                     </Form.Group>
@@ -380,7 +409,7 @@ export default function TopForm({
                       <Form.Label>Expiracion</Form.Label>
                       <Form.Control
                         type="date"
-                        defaultValue={selectedDate.value}
+                        defaultValue={selectedDate}
                         onChangeCapture={handleDateChange}
                       />
                     </Form.Group>
@@ -392,10 +421,22 @@ export default function TopForm({
                   >
                     <Form.Group>
                       <Form.Label>Descuento.</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={discount}
-                        onChange={(e) => setDiscount(e.target.value)}
+                      <InputFields
+                        readOnly={false}
+                        value={discount.toString() || ""}
+                        onChange={(e) => {
+                          setdiscount(e.target.value);
+                        }}
+                        maskChar={""}
+                        alwaysShowMask={false}
+                        name={"Descuento"}
+                        required={true}
+                        mask={"9999"}
+                        formatChars={{
+                          "9": "[0-9]",
+                          a: "[A-Za-z]",
+                          "*": "[A-Za-z0-9]",
+                        }}
                       />
                     </Form.Group>
                   </div>
@@ -408,7 +449,7 @@ export default function TopForm({
                       <Form.Label>Sub total.</Form.Label>
                       <Form.Control
                         type="text"
-                        value={price.subTotal ? price.subTotal.toFixed(2) : 0.0}
+                        value={subTotal ? subTotal.toFixed(2) : 0.0}
                         readOnly={true}
                       />
                     </Form.Group>
@@ -422,7 +463,7 @@ export default function TopForm({
                       <Form.Label>ITBIS.</Form.Label>
                       <Form.Control
                         type="text"
-                        value={price.tax ? price.tax.toFixed(2) : 0.0}
+                        value={tax ? tax.toFixed(2) : 0.0}
                         readOnly={true}
                       />
                     </Form.Group>
@@ -437,7 +478,7 @@ export default function TopForm({
                       <Form.Label>Total.</Form.Label>
                       <Form.Control
                         type="text"
-                        value={price.total ? price.total.toFixed(2) : 0.0}
+                        value={totalPrice ? totalPrice.toFixed(2) : 0.0}
                         readOnly={true}
                       />
                     </Form.Group>
@@ -445,15 +486,23 @@ export default function TopForm({
                 </div>
                 <div className="col-3  justify-content-lg-center  flex-lg-column">
                   <div className="row col-auto mb-3">
-                    <a className="mr-2 ml-1" onClick={reset}>
+                    <a
+                      className="mr-2 ml-1"
+                      onClick={() => {
+                        reset();
+                        history.push("/billing");
+                      }}
+                    >
                       Limpiar
                     </a>
                     <CustomModal
-                      save={() => setNotesProps(notes)}
-                      saveBtn={"Guardar"}
+                      primaryBtn={{
+                        title: "Guardar",
+                        onClick: () => setNotesProps(note),
+                      }}
                       children={
                         <Form.Control
-                          value={notes}
+                          value={note | ""}
                           onChange={(e) => setNotes(e.target.value)}
                           rows="4"
                           as="textarea"
@@ -463,6 +512,9 @@ export default function TopForm({
                       size={"sm"}
                       title={"Notas"}
                     />
+                    <div style={{marginLeft: 10}}>  
+                        <CustomSwitch  defaultValue={true} name="conduce" onValueChange={console.log} />
+                    </div>
                   </div>
                   <div
                     style={{
@@ -489,22 +541,31 @@ export default function TopForm({
                       title={"Productos"}
                       size={"lg"}
                     />
-                    <Button
-                      type="submit"
-                      id="save"
-                      size="sm"
-                      variant="outline-success"
-                    >
-                      <SaveIcon />
-                    </Button>
-                    <Button
-                      type="submit"
-                      id="big"
-                      size="sm"
-                      variant="outline-info"
-                    >
-                      <PrintIcon />
-                    </Button>
+
+                    <CustomModal
+                      children={<Printer ref={printRef} {...{ _id }} />}
+                      onClose={reset}
+                      openModalBtn={
+                        <Button
+                          type="submit"
+                          id="save"
+                          size="sm"
+                          variant="outline-success"
+                        >
+                          <SaveIcon />
+                        </Button>
+                      }
+                      title={"Factura"}
+                      size={"lg"}
+                      primaryBtn={{
+                        title: "Imprimir",
+                        onClick: () => printRef.current.click(),
+                      }}
+                      secundaryBtn={{
+                        title: "Recibo",
+                        onClick: () => printReciept(_id),
+                      }}
+                    />
                     <Button
                       type="submit"
                       id="small"

@@ -5,11 +5,12 @@ import _ from "lodash";
 import _helpers from "../../../helpers/_helpers";
 import service from "../service";
 export default class Bill {
+  _id;
   totalPrice = 0;
   subTotal = 0;
   tax = 0;
   isCredit = false;
-  client;
+  client = {};
   payDate = new Date();
   details = [];
   taxReciept = new TaxRecieptModel("", "", true, "");
@@ -30,7 +31,6 @@ export default class Bill {
       this.isCredit = true;
       this.payDate = new Date(valueAsNumber);
     }
-    console.log(this.isCredit, this.payDate);
   };
   setAllProps({
     totalPrice,
@@ -44,7 +44,14 @@ export default class Bill {
     discount,
     billNumer,
     createDate,
+    _id,
   }) {
+    details = _.map(details, (item) => {
+      item.name = item.product.name 
+      item.product = item.product._id;
+      return item;
+    });
+    this._id = _id;
     this.totalPrice = totalPrice;
     this.subTotal = subTotal;
     this.tax = tax;
@@ -90,56 +97,34 @@ export default class Bill {
   }
 
   setclient = (data) => {
-    console.log(data);
     this.client = new ClienModel(data);
   };
 
   settaxReciept(data) {
+    data._id = this.taxReciept._id;
     this.taxReciept = new TaxRecieptModel(data);
   }
 
   save = async () => {
     this.taxReciept = _.pick(this.taxReciept, [
+      "_id",
       "taxReciept",
       "type",
       "sequence",
       "isUsed",
     ]);
-    return await service.saveBill(this);
+    if (!this._id) {
+      return await service.saveBill(this);
+    } else {
+      return service.updateBill(this);
+    }
   };
 
   get = async (id) => {
     const payload = await service.getBillById(id);
     this.setAllProps(payload.data);
+    console.log(payload.data);
+
     return new Promise((resolve, reject) => resolve(true));
   };
 }
-
-
-
-
-/**{"totalPrice": 5000,
-"subTotal": 4366,
-"tax": 799,
-"isCredit": false,
-"client": {"_id": "5ffbacb46dd4c30eabd2ca1a"},
-"payDate": "Wed Jan 13 2021 10:30:21 GMT-0400 (Atlantic Standard Time)",
-"taxReciept": {
-      "taxReciept": "5ffb47828f1bc6e77a8791ba",
-      "isUsed": true,
-      "sequence": "0000001"
-
-  },
-"details": [
-  {
-    "product": "5ff3d9dfd93e2be06cd46676",
-    "sellPrice": 35, 
-    "quantity": 150
-  }, 
-  {
-    "product": "5ff3d7f5a7e1a2de62436208",
-    "sellPrice": 25, 
-    "quantity": 100
-  }
-  
-]}**/
