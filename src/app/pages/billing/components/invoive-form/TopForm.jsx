@@ -57,6 +57,7 @@ export default function TopForm({
     taxReciept,
   } = billData;
   const printRef = useRef();
+  const closeModalRef = useRef();
   const classes = useStyles();
   const [clientId, setclientId] = useState(client._id);
   const [clientName, setclientName] = useState(client.name);
@@ -512,8 +513,12 @@ export default function TopForm({
                       size={"sm"}
                       title={"Notas"}
                     />
-                    <div style={{marginLeft: 10}}>  
-                        <CustomSwitch  defaultValue={true} name="conduce" onValueChange={console.log} />
+                    <div style={{ marginLeft: 10 }}>
+                      <CustomSwitch
+                        defaultValue={true}
+                        name="conduce"
+                        onValueChange={console.log}
+                      />
                     </div>
                   </div>
                   <div
@@ -525,10 +530,14 @@ export default function TopForm({
                     }}
                   >
                     <CustomModal
+                      ref={closeModalRef}
                       children={
                         <CustomTable
                           columns={columns}
-                          onClick={(product) => onProductSelect(product)}
+                          onClick={(product) => {
+                            onProductSelect(product);
+                            closeModalRef.current.click();
+                          }}
                           data={products}
                           getData={getProducts}
                         />
