@@ -140,7 +140,7 @@ export default function TopForm({
         printBill();
         break;
       case "small":
-        printReciept2();
+        printReciept();
         break;
     }
   };
@@ -218,7 +218,6 @@ export default function TopForm({
                     <Form.Group controlId="formBasicPassword">
                       <Form.Label>Tipo de factura</Form.Label>
                       <Dropdown
-                        defaultValue={taxReciept.taxReciept}
                         onChange={({ nativeEvent }) =>
                           onTaxReciepsChange(nativeEvent.target.value)
                         }
