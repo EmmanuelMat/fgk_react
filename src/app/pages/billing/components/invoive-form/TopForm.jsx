@@ -336,6 +336,7 @@ export default function TopForm({
                       <Form.Label>Cliente ID</Form.Label>
                       <InputFields
                         onKeyDown={({ nativeEvent }) => {
+                          nativeEvent.preventDefault()
                           if (nativeEvent.key === "Enter")
                             getClient(null, clientCode, setClientOnCode);
                         }}
