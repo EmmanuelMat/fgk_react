@@ -37,7 +37,7 @@ export default function TopForm({
   products,
   getProducts,
   onProductSelect,
-
+  taxReciept,
   setClientIfEmpty,
   printReciept,
   reset,
@@ -54,7 +54,6 @@ export default function TopForm({
     save,
     setIsCredit,
     setclient,
-    taxReciept,
   } = billData;
   const printRef = useRef();
   const closeModalRef = useRef();
@@ -111,9 +110,9 @@ export default function TopForm({
   };
 
   const printReciept2 = async () => {
-    saveHelper();
+    const save = await saveHelper();
     printReciept(save.data._id);
-    history.push("/billing");
+    reset();
   };
 
   const saveHelper = async () => {
@@ -140,7 +139,7 @@ export default function TopForm({
         printBill();
         break;
       case "small":
-        printReciept();
+        printReciept2();
         break;
     }
   };
@@ -394,7 +393,7 @@ export default function TopForm({
                       <Form.Control
                         type="text"
                         readOnly={true}
-                        value={taxReciept.taxRecieptId || ""}
+                        value={taxReciept || ""}
                         required
                       />
                     </Form.Group>
