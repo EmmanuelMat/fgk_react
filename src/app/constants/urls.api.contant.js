@@ -5,6 +5,7 @@ const URLS = {
   CLIEN_BY: "/clients/by",
   TAX_RECIPT: "/taxreciept",
   TAX_RECIPT_LAST: "/taxreciept/last",
+  TAX_RECIPT_GEN: "/taxreciept/gen",
   TAX_RECIPT_GOV: "/taxrecieptgov",
   RECIEPT_LAST: "/reciept/last",
   RECIEPT: "/reciept",

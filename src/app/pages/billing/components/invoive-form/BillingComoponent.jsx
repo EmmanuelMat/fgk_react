@@ -14,6 +14,7 @@ import ClienModel from "../../../../../models/client.model";
 const initState = {
   taxRecieps: [],
   lastReciept: "",
+  selectedTaxReciept: "",
   products: [],
   selectedProduct: [],
   recieptTable: [],
@@ -32,7 +33,9 @@ export default class BillingComoponent extends Component {
   async componentDidMount() {
     this.getAll();
   }
-
+setselectedTaxReciept =(val) =>{
+  this.setState({val})
+}
   getAll = async () => {
     let taxRecieps = await service.getTaxReceipt();
     const lastReciept = await service.getLastReciept();
@@ -49,15 +52,13 @@ export default class BillingComoponent extends Component {
   };
 
   onTaxReciepsChangeHelper(taxRecieps) {
-    this.onTaxReciepsChange(taxRecieps[taxRecieps.length - 1]._id);
+    this.onTaxReciepsChange(null);
   }
   onTaxReciepsChange = async (val) => {
-    const lastTaxReciept = await service.getLastTaxReciept(val);
-    const taxReciept = new TaxRecipt(lastTaxReciept.data);
-    const taxRecieptId = taxReciept.createNewTaxRecipt();
-    this.setState({ taxRecieptId });
-    this.state.bill.settaxReciept(taxRecieptId);
-    console.log(taxRecieptId);
+    const  taxRecieptId = await service.genTaxReciept(val);
+    const {lastRecord, sequense}= taxRecieptId.data
+     this.state.bill.settaxReciept(lastRecord, sequense);
+     this.setState({taxRecieptId: sequense})
   };
 
   getClient = async (name, id, cb) => {

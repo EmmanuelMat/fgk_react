@@ -16,7 +16,7 @@ export default class Bill {
   taxReciept = new TaxRecieptModel("", "", true, "");
   discount = 0;
   billNumer;
-  notes;
+  notes= ".";
 
   setDiscount = (discount) => {
     if (discount) {
@@ -100,9 +100,11 @@ export default class Bill {
     this.client = new ClienModel(data);
   };
 
-  settaxReciept(data) {
+  settaxReciept(data, sequense) {
     data._id = this.taxReciept._id;
     this.taxReciept = new TaxRecieptModel(data);
+    this.taxReciept.taxRecieptId = sequense
+    this.taxReciept.taxReciept = this.taxReciept.taxReciept._id
   }
 
   save = async () => {

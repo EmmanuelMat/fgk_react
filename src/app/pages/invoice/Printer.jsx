@@ -7,27 +7,7 @@ import Bill from "../billing/classes/Bill";
 import Invoice from "./Invoice";
 
 const pageStyle = `
-@page {
-  size: 80mm 50mm;
-}
 
-@media all {
-  .pagebreak {
-    display: none;
-  }
-}
-@media print {  
-  *{
-    background: transparent !important;
-    color: #000 !important;
-    box-shadow: none  !important;
-    text-shadow: none !important;
-    float: none !important;
-    overflow-y: visible !important;
-  }
-
-  
-}
 `;
 
 const Printer = forwardRef(({ _id }, ref) => {
@@ -48,7 +28,6 @@ const Printer = forwardRef(({ _id }, ref) => {
   return (
     <ReactIf condition={show}>
       <ReactToPrint
-        pageStyle={pageStyle}
         trigger={() => (
           <div style={{ display: "none" }}>
             <Button ref={ref} id="test" size="sm" variant="outline-danger">

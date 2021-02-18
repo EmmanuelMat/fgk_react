@@ -3,7 +3,7 @@ import "./print.css";
 import dateFormat from "dateformat";
 import React, { Component } from "react";
 import _ from "lodash";
-import logo from './images/logo.jpg';
+import logo from "./images/logo.jpg";
 
 import _helpers from "../../helpers/_helpers";
 export default class Invoice extends Component {
@@ -20,7 +20,9 @@ export default class Invoice extends Component {
 
         <div id="identity">
           <div id="address">
-            <div><strong>Ferreteria Guerrero KADEYHE SRL</strong></div>
+            <div>
+              <strong>Ferreteria Guerrero KADEYHE SRL</strong>
+            </div>
             <div>C/Duarte #49. Frente Altice.</div>
             <div>Tel: (809) 957-5060</div>
             <div>Email: ferreteriaguerrerokadeyhe@gmail.com</div>
@@ -41,17 +43,23 @@ export default class Invoice extends Component {
               width: 315,
             }}
           >
-            <div>Valida para {bill.taxReciept.taxReciept.name}</div>
+            {bill.taxReciept.taxReciept.name === "Conduce" ? (
+              <div>Conduce</div>
+            ) : (
+              <>
+                <div>Valida para {bill.taxReciept.taxReciept.name}</div>
 
-            <div>
-              NCF:{" "}
-              {_helpers
-                .genTaxtReciept(
-                  bill.taxReciept.taxReciept,
-                  bill.taxReciept.sequence
-                )
-                .toUpperCase()}
-            </div>
+                <div>
+                  NCF:{" "}
+                  {_helpers
+                    .genTaxtReciept(
+                      bill.taxReciept.taxReciept,
+                      bill.taxReciept.sequence
+                    )
+                    .toUpperCase()}
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div id="customer">
@@ -252,9 +260,7 @@ export default class Invoice extends Component {
 
         <div id="terms">
           <h5>Terminos</h5>
-          <div>
-            Gracias Por su compra.
-          </div>
+          <div>Gracias Por su compra.</div>
         </div>
       </div>
     );

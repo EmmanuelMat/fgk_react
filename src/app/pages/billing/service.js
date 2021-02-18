@@ -13,9 +13,9 @@ function getClientByNameOrId(name, id) {
   return axios.get(urlsApiContant.URLS.CLIEN_BY, { params: { name, id } });
 }
 
-function getLastTaxReciept(taxreciept) {
-  return axios.get(urlsApiContant.URLS.TAX_RECIPT_LAST, {
-    params: { taxreciept },
+function genTaxReciept(gov_id = null) {
+  return axios.get(urlsApiContant.URLS.TAX_RECIPT_GEN, {
+    params: { gov_id },
   });
 }
 
@@ -53,7 +53,7 @@ export default {
   getLastReciept,
   getClientByNameOrId,
   getProducts,
-  getLastTaxReciept,
+  genTaxReciept,
   saveBill,
   getBillById,
   printReciept,
