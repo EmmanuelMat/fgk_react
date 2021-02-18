@@ -67,7 +67,7 @@ function InvoiceList() {
             }}
             secundaryBtn={{
               title: "Recibo",
-              // onClick: () => printReciept(_id),
+              onClick: () => service.printReciept(_id),
             }}
           />
         </ReactIf>
