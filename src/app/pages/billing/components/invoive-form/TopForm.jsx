@@ -9,7 +9,7 @@ import PrintOutlinedIcon from "@material-ui/icons/PrintOutlined";
 import CustomModal from "../../../../partials/content/custom-components/CustomModal";
 import CustomTable from "../../../../partials/content/custom-components/CustomTable";
 import _helpers from "../../../../helpers/_helpers";
-import validation from "../../../../partials/content/validation";
+import Validation from "../../../../partials/content/Validation";
 import { useHistory } from "react-router-dom";
 import Printer from "../../../invoice/Printer";
 import CustomSwitch from "../../../../partials/content/custom-components/CustomSwitch";
@@ -102,7 +102,7 @@ export default function TopForm({
     setclientAddress(data.address);
     setclient(data);
   };
-  validation();
+  Validation();
 
   const printBill = async () => {
     const save = await saveHelper();
@@ -159,7 +159,11 @@ export default function TopForm({
     { label: "Precio", value: "price" },
   ];
   return (
-    <Form onSubmit={submit} className="needs-validation">
+    <Form onKeyDown={({nativeEvent}) => {
+      // if(nativeEvent.code === "Enter"
+      // ) nativeEvent.prevent
+      console.log(nativeEvent)
+    }} onSubmit={submit} className="needs-validation">
       <div className={classes.root}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
@@ -336,14 +340,14 @@ export default function TopForm({
                       <Form.Label>Cliente ID</Form.Label>
                       <InputFields
                         onKeyDown={({ nativeEvent }) => {
-                          nativeEvent.preventDefault()
                           if (nativeEvent.key === "Enter")
                             getClient(null, clientCode, setClientOnCode);
                         }}
-                        disabled={taxReciept._id}
                         readOnly={false}
                         value={clientCode || ""}
-                        onChange={(e) => setclientCode(e.target.value)}
+                        onChange={(e) =>{
+                           setclientCode(e.target.value)
+                          }}
                         minLength={"5"}
                         maxLength={"5"}
                         name={"Client Code"}

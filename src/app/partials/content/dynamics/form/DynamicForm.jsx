@@ -1,12 +1,12 @@
 import React, {useRef} from "react";
 import { connect } from "react-redux";
 import { useForm } from "../../../../utils/useForm";
-import validation from "../../validation";
+import Validation from "../../Validation"
 import { generateComponent } from "./InputGenerator";
 
 export const DynamicForm = ({editValues, data, btn, onSubmit }) => {
 
-  validation();
+  Validation();
   const form = useRef()
 
   const [values, handleChange, handleSubmit] = useForm(editValues, onSubmit);
