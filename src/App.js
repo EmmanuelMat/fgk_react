@@ -9,6 +9,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { LastLocationProvider } from "react-router-last-location";
 import { Routes } from "./app/router/Routes";
 import { I18nProvider, LayoutSplashScreen, ThemeProvider } from "./_metronic";
+import ErrorBoundary from "./app/partials/layout/ErrorBoundary";
 
 export default function App({ store, persistor, basename }) {
   return (
@@ -27,7 +28,9 @@ export default function App({ store, persistor, basename }) {
                 {/* Provide `react-intl` context synchronized with Redux state.  */}
                 <I18nProvider>
                   {/* Render routes with provided `Layout`. */}
-                  <Routes />
+                  <ErrorBoundary>
+                    <Routes />
+                  </ErrorBoundary>
                 </I18nProvider>
               </ThemeProvider>
             </LastLocationProvider>

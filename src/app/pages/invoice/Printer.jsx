@@ -4,7 +4,8 @@ import { Button } from "react-bootstrap";
 import ReactToPrint from "react-to-print";
 import ReactIf from "../../helpers/ReactIf";
 import Bill from "../billing/classes/Bill";
-import Invoice from "./Invoice";
+import Invoice from "./Invoice"
+import InvoiceKadehe from "./InvoiceKadehe"
 
 const pageStyle = `
 
@@ -38,7 +39,7 @@ const Printer = forwardRef(({ _id }, ref) => {
         content={() => componentRef.current.lastChild}
       />
       <div ref={componentRef}>
-        <Invoice bill={bill} />
+        <InvoiceKadehe bill={bill} />
       </div>
     </ReactIf>
   );
