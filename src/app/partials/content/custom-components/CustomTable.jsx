@@ -42,7 +42,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 const CustomTable = ({ data, getData, onClick, columns }) => {
   const classes = useStyles();
-  const [page, setPage] = React.useState(parseInt(1));
+  const [page, setPage] = React.useState(parseInt(0));
   const [rowsPerPage, setRowsPerPage] = React.useState(
     parseInt(data.count.pageSize)
   );
