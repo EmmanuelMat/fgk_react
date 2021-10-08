@@ -1,0 +1,13 @@
+.table-wrapper .MuiDataGrid-window {
+  max-height: 208px !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+}
+
+.table-wrapper .MuiPaper-root {
+  overflow-y: hidden;
+}
+
+.table-wrapper .delte-icon:hover {
+  cursor: pointer;
+}

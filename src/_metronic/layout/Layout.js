@@ -15,6 +15,7 @@ import LayoutInitializer from "./LayoutInitializer";
 import QuickPanel from "../../app/partials/layout/QuickPanel";
 import KtContent from "./KtContent";
 import "./assets/Base.scss";
+import TabsBaseComponent from "../../app/pages/home/tabs/TabsBaseComponent";
 
 const htmlClassService = new HTMLClassService();
 
@@ -41,7 +42,6 @@ function Layout({
       {/* <!-- begin:: Header Mobile --> */}
       <HeaderMobile />
       {/* <!-- end:: Header Mobile --> */}
-
       <div className="kt-grid kt-grid--hor kt-grid--root">
         {/* <!-- begin::Body --> */}
         <div className="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
@@ -52,6 +52,7 @@ function Layout({
             </>
           )}
           {/* <!-- end:: Aside Left --> */}
+
           <div
             className="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor kt-wrapper"
             style={{ paddingTop: 80 }}
@@ -67,7 +68,11 @@ function Layout({
               id="kt_content"
               // className={`kt-content ${contentCssClasses} kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor`}
             >
-              <KtContent>{children}</KtContent>
+              <KtContent>
+                <div id="tabs-content-portal"></div>
+
+                {children}
+              </KtContent>
               {/*<!-- end:: Content Body -->*/}
             </div>
             {/* <!-- end:: Content --> */}
@@ -80,7 +85,8 @@ function Layout({
       </div>
       <QuickPanel />
       <ScrollTop />
-      <StickyToolbar />
+      <StickyToolbar />x
+      <TabsBaseComponent />
     </LayoutInitializer>
   ) : (
     // BLANK LAYOUT

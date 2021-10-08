@@ -10,7 +10,7 @@ import { LastLocationProvider } from "react-router-last-location";
 import { Routes } from "./app/router/Routes";
 import { I18nProvider, LayoutSplashScreen, ThemeProvider } from "./_metronic";
 import ErrorBoundary from "./app/partials/layout/ErrorBoundary";
-
+import './app/pages/home/manstyles.css';
 export default function App({ store, persistor, basename }) {
   return (
     /* Provide Redux store */

@@ -6,6 +6,7 @@ import DocsPage from "./docs/DocsPage";
 import { LayoutSplashScreen } from "../../../_metronic";
 import ProductsRouter from "../product/ProductsRouter";
 import { BillingRouter } from "../billing/BillingRouter";
+import TabsBaseComponent from "./tabs/TabsBaseComponent";
 const GoogleMaterialPage = lazy(() =>
   import("./google-material/GoogleMaterialPage")
 );

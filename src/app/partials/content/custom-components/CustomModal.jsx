@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 
-
-
-export default React.forwardRef(function CustomModal({
-  size,
-  openModalBtn,
-  primaryBtn,
-  secundaryBtn,
-  children,
-  title,
-  onClose,
-  showModalFormOutSide,
-}, ref) {
+export default React.forwardRef(function CustomModal(
+  {
+    size,
+    openModalBtn,
+    primaryBtn,
+    secundaryBtn,
+    children,
+    title,
+    onClose,
+    showModalFormOutSide,
+    closeOnSubmit = true,
+  },
+  ref
+) {
   const [show, setShow] = useState(false);
 
   const handleClose = () => {
@@ -22,7 +24,11 @@ export default React.forwardRef(function CustomModal({
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    if (showModalFormOutSide) handleShow();
+    if (showModalFormOutSide) {
+      handleShow();
+      return;
+    }
+    handleClose();
   }, [showModalFormOutSide]);
 
   return (
@@ -55,6 +61,7 @@ export default React.forwardRef(function CustomModal({
               variant="success"
               onClick={() => {
                 primaryBtn.onClick();
+                if (!closeOnSubmit) return;
                 handleClose();
               }}
             >
@@ -65,4 +72,4 @@ export default React.forwardRef(function CustomModal({
       </Modal>
     </>
   );
-})
+});

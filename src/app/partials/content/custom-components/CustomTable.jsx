@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import _ from "lodash";
 import _helpers from "../../../helpers/_helpers";
-
+import './styles.css';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -44,7 +44,7 @@ const CustomTable = ({ data, getData, onClick, columns }) => {
   const classes = useStyles();
   const [page, setPage] = React.useState(parseInt(0));
   const [rowsPerPage, setRowsPerPage] = React.useState(
-    parseInt(data.count.pageSize)
+    parseInt(data.count?.pageSize)
   );
   const [filter, seFilter] = React.useState(" ");
   function handleChangeRowsPerPage(event) {
@@ -64,7 +64,7 @@ const CustomTable = ({ data, getData, onClick, columns }) => {
   }, [page, rowsPerPage]);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root  + ' custome-table--container'}>
       <Input
         placeholder="Buscar"
         onChange={(e) => {
@@ -77,7 +77,7 @@ const CustomTable = ({ data, getData, onClick, columns }) => {
       />
 
       <Paper className={classes.paper}>
-        <Table className={classes.table} size="small">
+        <Table className={classes.table + ' custome-table'} size="small">
           <TableHead>
             <TableRow>
               {columns.map((row) => (

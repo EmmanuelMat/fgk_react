@@ -6,6 +6,7 @@ import HMenu from "./HMenu/HMenu";
 import AnimateLoading from "../../../app/partials/layout/AnimateLoading";
 import KTHeader from "../../_assets/js/header";
 import * as builder from "../../ducks/builder";
+import TabsBaseComponent from "../../../app/pages/home/tabs/TabsBaseComponent";
 
 class Header extends React.Component {
   headerCommonRef = React.createRef();
@@ -31,22 +32,25 @@ class Header extends React.Component {
       headerClasses
     } = this.props;
     return (
+      <>
+
       <div
         className={`kt-header kt-grid__item ${headerClasses}`}
         id="kt_header"
         ref={this.headerCommonRef}
         {...headerAttributes}
       >
+
         <AnimateLoading />
-        {/* <!-- begin: Header Menu --> */}
+{/* 
         {menuHeaderDisplay && <HMenu />}
-        {/* <!-- end: Header Menu --> */}
-        {/* <!-- begin:: Header Topbar --> */}
-        {/* <!-- empty div to fix topbar to stay on the right when menu-horizontal is hidden --> */}
-        {!menuHeaderDisplay && <div />}
-        <Topbar />
-        {/* <!-- end:: Header Topbar --> */}
+      
+        {!menuHeaderDisplay && <div />} */}
+        {/* <Topbar /> */}
+       <div style={{width: '100%', height: '100%'}} id="tabs-portal"></div>
+
       </div>
+      </>
     );
   }
 }

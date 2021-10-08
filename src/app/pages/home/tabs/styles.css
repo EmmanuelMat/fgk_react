@@ -1,0 +1,49 @@
+.MuiButtonBase-root {
+    height:  15px !important;
+}
+
+.Mui-selected {
+    background: #4c4e6f !important;
+    height:  15px !important;
+    border: solid #4c4e6f 1px !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+}
+
+.Mui-selected::after {
+    content: none !important;
+}
+
+.MuiButtonBase-root::after{
+    content: '';
+    display: block;
+    height: 70%;
+    width: 1px;
+    background: #fff;
+    position: absolute;
+    bottom: 4;
+    right: 0;
+
+}
+
+.MuiTabs-scrollable {
+    background-color: #1a1a27;
+    display: flex !important;
+    align-items: flex-end !important;
+
+}
+
+
+.MuiTabs-root {
+    background-color: #1a1a27;
+    height: 65px;
+}
+
+.MuiTabs-indicator {
+    background-color: violet !important;
+}
+
+.tab-panel {
+    overflow-y: scroll;
+   
+}

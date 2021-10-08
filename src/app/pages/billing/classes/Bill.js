@@ -14,14 +14,15 @@ export default class Bill {
   payDate = new Date();
   details = [];
   taxReciept = new TaxRecieptModel("", "", true, "");
-  discount = 0;
+  discount = "";
   billNumer;
-  notes= ".";
+  notes = "";
+  amountPaid= 0
 
   setDiscount = (discount) => {
-    if (discount) {
+    if (discount >= 0) {
       this.discount = discount;
-      this.totalPrice = this.totalPrice - parseInt(discount);
+      this.setprice();
     }
   };
 
@@ -47,8 +48,8 @@ export default class Bill {
     _id,
   }) {
     details = _.map(details, (item) => {
-      item.name = item.product.name 
-      item.product = item.product._id;
+      item.name = item.product?.name || "N/A";
+      item.product = item.product?._id || "N/A";
       return item;
     });
     this._id = _id;
@@ -67,7 +68,7 @@ export default class Bill {
 
   setdetails(product) {
     let data = product;
-    data.quantity = 1;
+    if (!data._id) return;
     this.details.push(
       new RecieptDetailsModel({
         product: data._id,
@@ -82,12 +83,13 @@ export default class Bill {
   setprice() {
     const price = _.toArray(_.mapValues(this.details, "sellPrice"));
     const quantity = _.toArray(_.mapValues(this.details, "quantity"));
-    const total = _.zipWith(price, quantity, function(a, b) {
+    let total = _.zipWith(price, quantity, function(a, b) {
       return a * b;
     });
-    this.totalPrice = _.sum(total);
-    this.subTotal = this.totalPrice / 1.18;
-    this.tax = this.totalPrice - this.subTotal;
+    total = total.reduce((a ,b) => a + b)
+    this.totalPrice = (total - this.discount || 0).toFixed(2);
+    this.subTotal = (this.totalPrice / 1.18).toFixed(2);
+    this.tax = (this.totalPrice - this.subTotal).toFixed(2);
   }
 
   removeDetails(data) {
@@ -103,8 +105,8 @@ export default class Bill {
   settaxReciept(data, sequense) {
     data._id = this.taxReciept._id;
     this.taxReciept = new TaxRecieptModel(data);
-    this.taxReciept.taxRecieptId = sequense
-    this.taxReciept.taxReciept = this.taxReciept.taxReciept._id
+    this.taxReciept.taxRecieptId = sequense;
+    this.taxReciept.taxReciept = this.taxReciept.taxReciept._id;
   }
 
   save = async () => {
@@ -125,7 +127,6 @@ export default class Bill {
   get = async (id) => {
     const payload = await service.getBillById(id);
     this.setAllProps(payload.data);
-    console.log(payload.data);
 
     return new Promise((resolve, reject) => resolve(true));
   };
