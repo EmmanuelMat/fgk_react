@@ -28,7 +28,6 @@ const ProductListContainer = ({ onRowClickHandler }) => {
   return (
     <>
       <CssBaseline />
-      <Container fixed>
         <ReactIf condition={products} Or={<LinearProgress />}>
           <CustomTable
             onClick={onRowClickHandler}
@@ -37,7 +36,6 @@ const ProductListContainer = ({ onRowClickHandler }) => {
             columns={columns}
           />
         </ReactIf>
-      </Container>
     </>
   );
 };

@@ -1,8 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { InputGroup } from "react-bootstrap";
 import { Form } from "react-bootstrap";
+import "./styles.css";
 
-const SearchInput = ({ label, getData, onSelect, outerValue }) => {
+const SearchInput = ({
+  label,
+  getData,
+  onSelect,
+  outerValue,
+  borderBottom,
+  onKeyDown = () => {},
+}) => {
   const [data, setData] = useState([]);
   const [value, setvalue] = useState([]);
 
@@ -27,7 +35,7 @@ const SearchInput = ({ label, getData, onSelect, outerValue }) => {
   }, [data]);
 
   useEffect(() => {
-    if (outerValue.name) {
+    if (outerValue?.name) {
       setData([outerValue]);
       setvalue(outerValue.name);
     }
@@ -35,9 +43,12 @@ const SearchInput = ({ label, getData, onSelect, outerValue }) => {
 
   return (
     <div>
-      <Form.Label>{label}</Form.Label>
+      {!borderBottom && <Form.Label>{label}</Form.Label>}
       <InputGroup className="mb-3">
         <Form.Control
+          onKeyDown={onKeyDown}
+          placeholder={borderBottom ? label : ""}
+          className={borderBottom && "input-border-bottom"}
           disabled={value?._id || false}
           type="text"
           value={value || ""}

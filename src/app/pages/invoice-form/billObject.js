@@ -17,9 +17,16 @@ export const billObject = {
   amountPaid: 0,
 };
 
+export const pad = (n, width, z) => {
+  z = z || "0";
+  n = n + "";
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
 export const _setTaxReciept = (data, sequense) => {
+  data.sequence = pad(data.sequence, 8)
   let taxReciept = new TaxRecieptModel(data);
-  taxReciept.taxRecieptId = sequense;
+  taxReciept.taxRecieptId = sequense
   taxReciept.taxReciept = taxReciept.taxReciept._id;
   return taxReciept;
 };

@@ -3,8 +3,8 @@ import CustomModal from "../../partials/content/custom-components/CustomModal";
 import NoteIcon from "@material-ui/icons/Note";
 import { Form } from "react-bootstrap";
 
-const NoteModal = ({onSave}) => {
-    const [note, setNote] = useState("")
+const NoteModal = ({onSave, notes}) => {
+    const [note, setNote] = useState(notes.notes)
   return (
     <div>
       <CustomModal

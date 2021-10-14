@@ -2,6 +2,8 @@ import { Paper, makeStyles } from "@material-ui/core";
 import { Button } from "react-bootstrap";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Dropdown from "../../partials/content/custom-components/Dropdown";
+import Alert from "@material-ui/lab/Alert";
+
 import {
   invoiceFixedValues,
   invoiceFormConfig,
@@ -13,7 +15,6 @@ import SaveIcon from "@material-ui/icons/Save";
 import PrintOutlinedIcon from "@material-ui/icons/PrintOutlined";
 import service from "../billing/service";
 import SearchInput from "../../partials/content/custom-components/SearchInput";
-import Bill from "../billing/classes/Bill";
 import DataGridComponent from "../../partials/content/custom-components/DataGridComponent";
 import _helpers from "../../helpers/_helpers";
 import _ from "lodash";
@@ -25,8 +26,10 @@ import { setTabState } from "../../actions/tabsAction";
 import "./styles.css";
 import FormContainer from "./components/FormContainer";
 import SubmitModal from "./components/SubmitModal";
-import { billObject, _setDetails, _setTaxReciept } from "./billObject";
+import { _setDetails, _setTaxReciept } from "./billObject";
 import ClienModel from "../../../models/client.model";
+import TaxRecieptModel from "../../../models/tax.reciept.model";
+import CustomizedSnackbars from "../../partials/content/custom-components/CustomizedSnackbars";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,13 +59,34 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
   const printRef = useRef();
 
   const classes = useStyles();
+  const [validBill, setValidBill] = useState(false);
   const [reciptTypes, setReciptTypes] = useState([]);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showPrinterModal, setShowPrinterModal] = useState(false);
   const [savedBillId, setSavedBillId] = useState("");
-  const [recieptType, setrecieptType] = useState("5ffb47828f1bc6e77a8791ba");
-  const [bill, setBill] = useState(new Bill());
-  const [bill2, setBill2] = useState(billObject);
+  const [bill2, setBill2] = useState({
+    createDate: new Date(),
+    payDate: new Date(),
+    totalPrice: 0,
+    subTotal: 0,
+    tax: 0,
+    isCredit: false,
+    client: {}, //done
+    details: [],
+    discount: 0,
+    taxReciept: new TaxRecieptModel(
+      "",
+      "",
+      "5ffb47828f1bc6e77a8791ba",
+      true,
+      ""
+    ), //done
+    billNumer: 0,
+    notes: "",
+    amountPaid: 0,
+  });
+  const [recieptType, setrecieptType] = useState(bill2.taxReciept.taxReciept || "5ffb47828f1bc6e77a8791ba");
+
   const [option, setOption] = useState();
   const [inputFields, setInputFields] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
@@ -94,9 +118,15 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
   const onTaxReciepsChange = async (val) => {
     const taxRecieptId = await service.genTaxReciept(val);
     const { lastRecord, sequense } = taxRecieptId.data;
-    bill.settaxReciept(lastRecord, sequense);
     setBill2((prev) => {
       prev.taxReciept = _setTaxReciept(lastRecord, sequense);
+      prev.taxReciept = _.pick(prev.taxReciept, [
+        "_id",
+        "taxReciept",
+        "type",
+        "sequence",
+        "isUsed",
+      ]);
       return prev;
     });
     setInputFields({ ...inputFields, [nameContants.NCF]: sequense });
@@ -114,7 +144,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
     if (!Array.isArray(items) || items.length === 0)
       return { total: 0, subTotal: 0, tax: 0 };
 
-    if (!Array.isArray(items) || items.length === 1) {
+    if (items.length === 1) {
       total = parseFloat(items[0].sellPrice);
     } else {
       total = items.reduce((a, b) => {
@@ -141,9 +171,9 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
   };
 
   useEffect(() => {
-    console.log('test');
     setBill2((prev) => {
       const priceObj = priceChange(bill2.details);
+
       prev.totalPrice = priceObj.total;
       prev.subTotal = priceObj.subTotal;
       prev.tax = priceObj.tax;
@@ -172,19 +202,32 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
 
   const onTableCellChange = (_id, key, value) => {
     const dKey = key === "price" ? "sellPrice" : key;
-    const index = bill.details.findIndex((item) => item.product === _id);
+    const index = bill2.details.findIndex((item) => item.product === _id);
     const newElement = bill2.details[index];
     newElement[dKey] = parseFloat(value);
     setBill2((prev) => {
       prev.details.splice(index, 1, newElement);
-      prev.details = [...prev.details]
+      prev.details = [...prev.details];
       return prev;
     });
-    // bill.details.splice(index, 1, newElement);
   };
 
   const reset = () => {
-    setBill(billObject);
+    setBill2({
+      createDate: new Date(),
+      payDate: new Date(),
+      totalPrice: 0,
+      subTotal: 0,
+      tax: 0,
+      isCredit: false,
+      client: {}, //done
+      details: [],
+      discount: 0,
+      taxReciept: new TaxRecieptModel("", "", true, ""), //done
+      billNumer: 0,
+      notes: "",
+      amountPaid: 0,
+    });
     setSelectedItems([]);
   };
 
@@ -192,7 +235,8 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
     if (tabState && tabState[activeTab]?.tabState) {
       const state = tabState[activeTab].tabState;
       setSelectedItems(state.selectedItems);
-      setBill(state.bill);
+      setBill2(state.bill2);
+      setrecieptType(state.recieptType);
     }
     _setPrice();
     service.getTaxReceipt().then((res) => setReciptTypes(res.data));
@@ -209,24 +253,43 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
     if (params.field === "delete") {
       const index = selectedItems.findIndex((x) => x.id === params.row.id);
       const temp = [...selectedItems];
-      bill.details.splice(index, 1);
       temp.splice(index, 1);
+
       setSelectedItems(temp);
-      // bill.setprice();
-      // _setPrice();
+
+      setBill2((prev) => {
+        prev.details.splice(index, 1);
+        prev.details = [...prev.details];
+        return prev;
+      });
     }
   };
 
   const submit = (opt) => {
+    if (selectedItems.length === 0 || !bill2.client.name) {
+      setValidBill(true);
+      return;
+    }
     setShowSubmitModal(true);
     setOption(opt);
   };
 
+  const save = async () => {
+    if (bill2._id) {
+      return await service.saveBill(bill2);
+    } else {
+      return service.saveBill(bill2);
+    }
+  };
+
   const handleSubmit = async (val) => {
-    console.log(bill2);
     if (typeof val !== "number") return;
-    bill.amountPaid = val;
-    const res = await bill.save();
+    setBill2((prev) => {
+      prev.amountPaid = val;
+      return prev;
+    });
+
+    const res = await save();
     if (!res.data?._id) return;
     if (option === "print") {
       service.printReciept(res.data._id);
@@ -236,11 +299,11 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
     }
   };
 
-  useMemo(() => {
+  useEffect(() => {
     dispatch(
-      setTabState({ id: activeTab, tabState: { bill2, selectedItems } })
+      setTabState({ id: activeTab, tabState: { bill2, selectedItems, recieptType } })
     );
-  }, [bill2, selectedItems]);
+  }, [bill2, bill2.notes, bill2.client, selectedItems, recieptType]);
 
   useEffect(() => {
     onTaxReciepsChange(recieptType);
@@ -249,6 +312,17 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
   return (
     <>
       <Paper className={classes.root}>
+        <div style={{ width: "100%" }}>
+          <CustomizedSnackbars
+            {...{
+              show: validBill,
+              message: "Agregar productos o cliente.",
+              onClose: setValidBill,
+              severity: "warning",
+            }}
+          />
+        </div>
+
         <div className="d-flex justify-content-around">
           <FormContainer
             {...{
@@ -268,7 +342,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
           <div className="mb-3">
             <SearchInput
               {...{
-                outerValue: bill.client,
+                outerValue: bill2.client,
                 label: "Cliente",
                 getData: service.getClientByNameOrId,
                 onSelect: _setClient,
@@ -287,7 +361,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
               handleProductSelect={handleProductSelect}
             />
             <Button id="small" size="sm" variant="outline-primary">
-              <NoteModal onSave={setNote} />
+              <NoteModal notes={bill2} onSave={setNote} />
             </Button>
             <Button
               onClick={() => submit("save")}
@@ -346,11 +420,12 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
         _id={savedBillId}
         ref={printRef}
       />
+
       <SubmitModal
         {...{
           setShowSubmitModal,
           showModalFormOutSide: showSubmitModal,
-          bill,
+          bill: bill2,
           onClose: () => {},
           onSave: handleSubmit,
         }}

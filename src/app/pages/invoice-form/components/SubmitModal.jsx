@@ -59,7 +59,7 @@ const SubmitModal = ({
             <input
               {...register("cantidad", { min: bill.totalPrice + 1 })}
               className={`form-control  ${errors?.cantidad && " is-invalid"}`}
-              type="number"
+              type="number" defaultValue="0"
             />
             <div className="invalid-feedback">
               {errors?.cantidad && errors?.cantidad.message}

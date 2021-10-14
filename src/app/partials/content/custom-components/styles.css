@@ -1,1 +1,9 @@
 /* custom table styles */
+.input-border-bottom {
+  border: none !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  
+}

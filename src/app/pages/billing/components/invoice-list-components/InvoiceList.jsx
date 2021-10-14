@@ -4,9 +4,8 @@ import service from "../../service";
 import { Container, CssBaseline, LinearProgress } from "@material-ui/core";
 import ReactIf from "../../../../helpers/ReactIf";
 import CustomModal from "../../../../partials/content/custom-components/CustomModal";
-const Printer = React.lazy(() =>
-  import("../../../invoice/Printer")
-);
+import ListSearchPannel from "./ListSearchPannel";
+const Printer = React.lazy(() => import("../../../invoice/Printer"));
 const columns = [
   { label: "Codigo", value: "billNumer" },
   { label: "Cliente", value: ["client", "name"] },
@@ -30,12 +29,34 @@ function InvoiceList() {
   };
 
   const printRef = useRef();
-  const getInvoices = async (pageNumber, pageSize, name) => {
+  const getInvoices = async (pageNumber=0, pageSize=10, name) => {
     let invoices = await service.getInvoices(pageNumber, pageSize, name);
     invoices = invoices.data;
     setInvoices(invoices);
     setisLoaded(true);
   };
+
+  const getInvoicesByClientId = async (clientId) => {
+    if (!clientId) {
+      getInvoices();
+      return;
+    }
+    let invoices = await service.getInvoicesByClientId(clientId);
+    invoices = invoices.data;
+    setInvoices(invoices);
+  };
+
+
+  const getInvoicesByBillNUmber = async (billNumber) => {
+    if (!billNumber) {
+      getInvoices();
+      return;
+    }
+    let invoices = await service.getInvoicesByBillNUmber(billNumber);
+    invoices = invoices.data;
+    setInvoices(invoices);
+  };
+  
   useEffect(() => {
     getInvoices();
   }, []);
@@ -43,35 +64,36 @@ function InvoiceList() {
   return (
     <>
       <CssBaseline />
-      <Container fixed>
-        <ReactIf condition={isLoaded} Or={<LinearProgress />}>
-          <CustomTable
-            onClick={onRowClickHandler}
-            data={invoices}
-            getData={getInvoices}
-            columns={columns}
-          />
-          <CustomModal
-            showModalFormOutSide={showModal}
-            onClose={() => setShowModal(false)}
-            children={
-              <React.Suspense fallback={<LinearProgress />}>
-                <Printer ref={printRef} {...{ _id }} />
-              </React.Suspense>
-            }
-            title={"Factura"}
-            size={"lg"}
-            primaryBtn={{
-              title: "Imprimir",
-              onClick: () => printRef.current.click(),
-            }}
-            secundaryBtn={{
-              title: "Recibo",
-              onClick: () => service.printReciept(_id),
-            }}
-          />
-        </ReactIf>
-      </Container>
+      <ReactIf condition={isLoaded} Or={<LinearProgress />}>
+        <CustomTable
+          onClick={onRowClickHandler}
+          data={invoices}
+          getData={getInvoices}
+          columns={columns}
+          SearchPannel={() => (
+            <ListSearchPannel getInvoicesByBillNUmber={getInvoicesByBillNUmber} getInvoicesByClientId={getInvoicesByClientId} />
+          )}
+        />
+        <CustomModal
+          showModalFormOutSide={showModal}
+          onClose={() => setShowModal(false)}
+          children={
+            <React.Suspense fallback={<LinearProgress />}>
+              <Printer ref={printRef} {...{ _id }} />
+            </React.Suspense>
+          }
+          title={"Factura"}
+          size={"lg"}
+          primaryBtn={{
+            title: "Imprimir",
+            onClick: () => printRef.current.click(),
+          }}
+          secundaryBtn={{
+            title: "Recibo",
+            onClick: () => service.printReciept(_id),
+          }}
+        />
+      </ReactIf>
     </>
   );
 }

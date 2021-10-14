@@ -48,6 +48,19 @@ function getInvoices(pagenumber, pagesize, name) {
     params: { pagenumber, pagesize, name },
   });
 }
+
+function getInvoicesByClientId(clientid) {
+  return axios.get(urlsApiContant.URLS.RECIEPT_BY_CLIENT_ID, {
+    params: { clientid },
+  });
+}
+
+function getInvoicesByBillNUmber(billNumber) {
+  return axios.get(urlsApiContant.URLS.RECIEPT_BY_INVOCE_ID, {
+    params: { billNumber },
+  });
+}
+
 export default {
   getTaxReceipt,
   getLastReciept,
@@ -58,5 +71,7 @@ export default {
   getBillById,
   printReciept,
   getInvoices,
-  updateBill
+  updateBill,
+  getInvoicesByClientId,
+  getInvoicesByBillNUmber
 };

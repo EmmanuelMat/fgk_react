@@ -138,7 +138,7 @@ function TabsBaseComponent() {
                 value={value}
                 index={item.id}
               >
-                <div className="container m-0">{item.component(item.id)}</div>
+                <div className="m-4">{item.component(item.id)}</div>
               </TabPanel>
             );
           })}
