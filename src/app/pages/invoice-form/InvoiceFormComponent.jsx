@@ -147,10 +147,10 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
       return { total: 0, subTotal: 0, tax: 0 };
 
     if (items.length === 1) {
-      total = parseFloat(items[0].sellPrice);
+      total = parseFloat(items[0].price);
     } else {
       total = items.reduce((a, b) => {
-        return a + parseFloat(b.sellPrice || 0) * parseInt(b.quantity);
+        return a + parseFloat(b.price || 0) * parseInt(b.quantity);
       }, 0);
     }
     const subTotal = total / 1.18;
@@ -173,19 +173,20 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
   };
 
   useEffect(() => {
+ 
     setBill2((prev) => {
-      const priceObj = priceChange(bill2.details);
+      const priceObj = priceChange(selectedItems);
 
       prev.totalPrice = priceObj.total;
       prev.subTotal = priceObj.subTotal;
       prev.tax = priceObj.tax;
       return prev;
     });
-  }, [bill2.details]);
+  }, [selectedItems]);
 
   useEffect(() => {
     _setPrice();
-  }, [bill2.totalPrice]);
+  }, [bill2.totalPrice,]);
 
   const handleCellChange = (data) => {
     if (!data.props || !data.props.value) return;
@@ -206,7 +207,14 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
     const dKey = key === "price" ? "sellPrice" : key;
     const index = bill2.details.findIndex((item) => item.product === _id);
     const newElement = bill2.details[index];
+    const newElement2 = selectedItems[index];
+
     newElement[dKey] = parseFloat(value);
+    newElement2[key] = parseFloat(value);
+
+    const temp = [...selectedItems];
+    temp.splice(index, 1, newElement2)
+    setSelectedItems([...temp])
     setBill2((prev) => {
       prev.details.splice(index, 1, newElement);
       prev.details = [...prev.details];
