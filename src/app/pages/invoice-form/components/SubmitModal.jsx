@@ -1,9 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import CustomModal from "../../../partials/content/custom-components/CustomModal";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { setLocale } from "yup";
+import { makeStyles, FormControlLabel, Checkbox } from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+  },
+  formControl: {
+    margin: theme.spacing(3),
+  },
+}));
 
 setLocale({
   number: {
@@ -14,7 +24,7 @@ setLocale({
 });
 
 const dynamicSchema = (total) => {
-   return yup.object().shape({
+  return yup.object().shape({
     cantidad: yup
       .number()
       .positive()
@@ -30,8 +40,12 @@ const SubmitModal = ({
   bill,
   setShowSubmitModal,
 }) => {
+  const classes = useStyles();
+  const [copy, setCopy] = useState(false);
+  const [conduce, setConduce] = useState(false);
+
   const onSubmit = (data) => {
-    onSave(parseFloat(data.cantidad));
+    onSave(parseFloat(data.cantidad), copy, conduce);
     setShowSubmitModal(false);
   };
 
@@ -44,7 +58,6 @@ const SubmitModal = ({
       dynamicSchema(parseFloat(bill.totalPrice).toFixed(2))
     ),
   });
-
 
   return (
     <div>
@@ -59,7 +72,8 @@ const SubmitModal = ({
             <input
               {...register("cantidad", { min: bill.totalPrice + 1 })}
               className={`form-control  ${errors?.cantidad && " is-invalid"}`}
-              type="number" defaultValue="0"
+              type="number"
+              defaultValue="0"
             />
             <div className="invalid-feedback">
               {errors?.cantidad && errors?.cantidad.message}
@@ -69,10 +83,33 @@ const SubmitModal = ({
               <span>Sub total: {parseFloat(bill.subTotal).toFixed(2)} </span>
               <span>ITBIS: {parseFloat(bill.tax).toFixed(2)}</span>
             </div>
+
+            <div className="d-flex flex-wrap justify-content-around">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={conduce}
+                    onChange={(event) => setConduce(event.target.checked)}
+                    name="conduce"
+                  />
+                }
+                label="Conduce"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={copy}
+                    onChange={(event) => setCopy(event.target.checked)}
+                    name="Copia"
+                  />
+                }
+                label="Copia"
+              />
+            </div>
           </div>
         }
         size={"sm"}
-        title={"Notas"}
+        title={"Finalizar"}
         onClose={() => setShowSubmitModal(false)}
         closeOnSubmit={false}
       />

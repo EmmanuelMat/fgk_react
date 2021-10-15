@@ -25,8 +25,20 @@ function getProducts(pagenumber, pagesize, name) {
   });
 }
 
-function printReciept(id) {
+function printReciept(id, conduce, copy) {
   return axios.get(urlsApiContant.URLS.PRINT_RECIEPT, {
+    params: { id, conduce, copy },
+  });
+}
+
+function printCopy(id) {
+  return axios.get(urlsApiContant.URLS.PRINT_RECIEPT_COPY, {
+    params: { id },
+  });
+}
+
+function printConduce(id) {
+  return axios.get(urlsApiContant.URLS.PRINT_RECIEPT_COPY, {
     params: { id },
   });
 }
@@ -73,5 +85,7 @@ export default {
   getInvoices,
   updateBill,
   getInvoicesByClientId,
-  getInvoicesByBillNUmber
+  getInvoicesByBillNUmber,
+  printConduce,
+  printCopy
 };

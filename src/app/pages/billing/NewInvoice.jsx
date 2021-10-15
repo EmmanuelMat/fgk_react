@@ -17,7 +17,7 @@ export const NewInvoice = () => {
     dispatch(
       addTab({
         title: "Nueva factura",
-        component: () => <InvoiceFormComponent />,
+        component: (activeTab, closeTab) => <InvoiceFormComponent {...{activeTab, closeTab}} />,
         isNewWindow: false,
       })
     );

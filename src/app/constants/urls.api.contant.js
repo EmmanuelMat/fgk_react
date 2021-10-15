@@ -16,7 +16,9 @@ const URLS = {
   USER: "/user",
   HOME: "/home",
   AUTH: "/auth",
-  PRINT_RECIEPT: "/reciept/print"
+  PRINT_RECIEPT: "/reciept/print",
+  PRINT_RECIEPT_COPY: "/reciept/print/copy",
+  PRINT_RECIEPT_CONDUCE: "/reciept/print/conduce"
 };
 
 export default { URLS }

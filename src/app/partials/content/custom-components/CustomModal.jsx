@@ -12,6 +12,7 @@ export default React.forwardRef(function CustomModal(
     onClose,
     showModalFormOutSide,
     closeOnSubmit = true,
+    onShow = () => {}
   },
   ref
 ) {
@@ -21,14 +22,17 @@ export default React.forwardRef(function CustomModal(
     setShow(false);
     if (onClose) onClose();
   };
-  const handleShow = () => setShow(true);
+  const handleShow = () => {
+    onShow()
+    setShow(true);
+  };
 
   useEffect(() => {
     if (showModalFormOutSide) {
       handleShow();
       return;
     }
-    handleClose();
+    
   }, [showModalFormOutSide]);
 
   return (

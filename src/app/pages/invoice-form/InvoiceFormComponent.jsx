@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const InvoiceFormComponent = ({ activeTab, tabState }) => {
+const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
   const closeModalRef = useRef();
   const printRef = useRef();
 
@@ -86,6 +86,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
     amountPaid: 0,
   });
   const [recieptType, setrecieptType] = useState(bill2.taxReciept.taxReciept || "5ffb47828f1bc6e77a8791ba");
+  const [notes, setNotes] = useState("");
 
   const [option, setOption] = useState();
   const [inputFields, setInputFields] = useState({});
@@ -109,6 +110,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
   };
 
   const setNote = (val) => {
+    setNotes(val)
     setBill2((prev) => {
       prev.notes = val;
       return prev;
@@ -237,6 +239,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
       setSelectedItems(state.selectedItems);
       setBill2(state.bill2);
       setrecieptType(state.recieptType);
+      setNotes(state.notes)
     }
     _setPrice();
     service.getTaxReceipt().then((res) => setReciptTypes(res.data));
@@ -282,7 +285,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
     }
   };
 
-  const handleSubmit = async (val) => {
+  const handleSubmit = async (val, conduce, copy) => {
     if (typeof val !== "number") return;
     setBill2((prev) => {
       prev.amountPaid = val;
@@ -292,7 +295,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
     const res = await save();
     if (!res.data?._id) return;
     if (option === "print") {
-      service.printReciept(res.data._id);
+      service.printReciept(res.data._id, conduce, copy);
     } else if (option === "save") {
       setShowPrinterModal(true);
       setSavedBillId(res.data._id);
@@ -301,9 +304,9 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
 
   useEffect(() => {
     dispatch(
-      setTabState({ id: activeTab, tabState: { bill2, selectedItems, recieptType } })
+      setTabState({ id: activeTab, tabState: { bill2, selectedItems, recieptType, notes } })
     );
-  }, [bill2, bill2.notes, bill2.client, selectedItems, recieptType]);
+  }, [bill2, notes, bill2.client, selectedItems, recieptType]);
 
   useEffect(() => {
     onTaxReciepsChange(recieptType);
@@ -361,7 +364,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
               handleProductSelect={handleProductSelect}
             />
             <Button id="small" size="sm" variant="outline-primary">
-              <NoteModal notes={bill2} onSave={setNote} />
+              <NoteModal notes={notes} onSave={setNote} />
             </Button>
             <Button
               onClick={() => submit("save")}
@@ -413,10 +416,10 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
         </Paper>
       </div>
       <SaveModal
-        showPrinterModal={showPrinterModal}
+        showPrinterModal={showPrinterModal} 
         printReciept={() => null}
         print={() => null}
-        onClose={reset}
+        onClose={closeTab}
         _id={savedBillId}
         ref={printRef}
       />
@@ -426,7 +429,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
           setShowSubmitModal,
           showModalFormOutSide: showSubmitModal,
           bill: bill2,
-          onClose: () => {},
+          onClose: () => closeTab(),
           onSave: handleSubmit,
         }}
       />
@@ -435,7 +438,7 @@ const InvoiceFormComponent = ({ activeTab, tabState }) => {
 };
 
 const mapStateToProps = (state) => ({
-  activeTab: state.tabs.active,
+  // activeTab: state.tabs.active,
   tabState: state.tabs.tabState,
 });
 

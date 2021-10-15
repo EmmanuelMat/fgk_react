@@ -12,7 +12,6 @@ import ReactDOM from "react-dom";
 import "./styles.css";
 import { addTab, removeTab, setActiveTab } from "../../../actions/tabsAction";
 import { useDispatch, useSelector } from "react-redux";
-import InvoiceFormComponent from "../../invoice-form/InvoiceFormComponent";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -102,6 +101,15 @@ function TabsBaseComponent() {
     setValue(tabs[index - 1].id);
   };
 
+  const closeTab = () => {
+    const index = tabs.findIndex((tab) => tab.id != activeTab);
+    let newTabs = tabs;
+    newTabs.splice(index, 1);
+    dispatch(removeTab(newTabs));
+    if (!tabs[index - 1]) return;
+    setValue(tabs[index - 1].id);
+  }
+
   return ReactDOM.createPortal(
     <div className={`${classes.root} tabs-component`}>
       <AppBar position="static">
@@ -121,7 +129,7 @@ function TabsBaseComponent() {
                 wrapped
                 {...a11yProps(item.id)}
                 icon={
-                  <span onClick={(e) => handleTabClose(e, item.id)}>x</span>
+                  <a onClick={(e) => handleTabClose(e, item.id)}>x</a>
                 }
               />
             );
@@ -138,7 +146,7 @@ function TabsBaseComponent() {
                 value={value}
                 index={item.id}
               >
-                <div className="m-4">{item.component(item.id)}</div>
+                <div className="m-4">{item.component(item.id, closeTab)}</div>
               </TabPanel>
             );
           })}

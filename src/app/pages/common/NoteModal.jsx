@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomModal from "../../partials/content/custom-components/CustomModal";
 import NoteIcon from "@material-ui/icons/Note";
 import { Form } from "react-bootstrap";
 
-const NoteModal = ({onSave, notes}) => {
-    const [note, setNote] = useState(notes.notes)
+const NoteModal = ({ onSave, notes }) => {
+  const [note, setNote] = useState(notes);
+
+  const handleShow = () => {
+    setNote(notes);
+  };
+
   return (
     <div>
       <CustomModal
+        onShow={handleShow}
         primaryBtn={{
           title: "Guardar",
           onClick: () => onSave(note),
