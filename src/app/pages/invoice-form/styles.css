@@ -11,3 +11,8 @@
 .table-wrapper .delte-icon:hover {
   cursor: pointer;
 }
+
+
+.table-wrapper .delte-icon {
+  z-index: 999999;
+}

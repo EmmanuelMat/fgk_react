@@ -1,4 +1,4 @@
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 
 export const nameContants = {
   NCF: "ncf",
@@ -78,7 +78,7 @@ export const selectedItemsColumns = [
     field: "id",
     headerName: "Codigo",
     flex: 0.3,
-    minWidth: 90,
+    minWidth: 140,
     editable: false,
     sortable: false,
     visible: false,
@@ -88,7 +88,7 @@ export const selectedItemsColumns = [
     field: "name",
     headerName: "Nombre",
     flex: 2,
-    minWidth: 230,
+    minWidth: 210,
     editable: false,
     sortable: false,
   },
@@ -99,6 +99,7 @@ export const selectedItemsColumns = [
     minWidth: 90,
     editable: true,
     sortable: false,
+    type: 'number'
   },
   {
     field: "unit",
@@ -112,7 +113,7 @@ export const selectedItemsColumns = [
     field: "price",
     headerName: "Precio",
     flex: 1,
-    minWidth: 160,
+    minWidth: 110,
     editable: true,
     sortable: false,
   },
@@ -129,5 +130,6 @@ export const selectedItemsColumns = [
   {
     field: "delete",
     headerName: "Delete",
-    renderCell: (params) => <DeleteForeverIcon className="delte-icon"/>     },
+    renderCell: (params) => <DeleteForeverIcon className="delte-icon" />,
+  },
 ];

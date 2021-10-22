@@ -26,7 +26,7 @@ import { setTabState } from "../../actions/tabsAction";
 import "./styles.css";
 import FormContainer from "./components/FormContainer";
 import SubmitModal from "./components/SubmitModal";
-import { _setDetails, _setTaxReciept } from "./billObject";
+import { createBillObject, _setDetails, _setTaxReciept } from "./billObject";
 import ClienModel from "../../../models/client.model";
 import TaxRecieptModel from "../../../models/tax.reciept.model";
 import CustomizedSnackbars from "../../partials/content/custom-components/CustomizedSnackbars";
@@ -62,32 +62,23 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
   const [validBill, setValidBill] = useState(false);
   const [reciptTypes, setReciptTypes] = useState([]);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const [bill2, setBill2] = useState(() => createBillObject({}));
   const [showPrinterModal, setShowPrinterModal] = useState(false);
   const [savedBillId, setSavedBillId] = useState("");
-  const [bill2, setBill2] = useState({
-    createDate: new Date(),
-    payDate: new Date(),
-    totalPrice: 0,
-    subTotal: 0,
-    tax: 0,
-    isCredit: false,
-    client: {}, //done
-    details: [],
-    discount: 0,
-    taxReciept: new TaxRecieptModel(
-      "",
-      "",
-      "5ffb47828f1bc6e77a8791ba",
-      true,
-      ""
-    ), //done
-    billNumer: 0,
-    notes: "",
-    amountPaid: 0,
-  });
-  const [recieptType, setrecieptType] = useState(bill2.taxReciept.taxReciept || "5ffb47828f1bc6e77a8791ba");
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [subTotal, setSubTotal] = useState(0);
+  const [tax, setTax] = useState(0);
+  const [client, setClient] = useState({});
+  const [amountPaid, setAmountPaid] = useState(0);
+  const [billNumber, setBillNumber] = useState(0);
   const [notes, setNotes] = useState("");
-
+  const [discount, setDiscount] = useState(0);
+  const [taxReciept, setTaxReciept] = useState(
+    new TaxRecieptModel("", "", "5ffb47828f1bc6e77a8791ba", true, "")
+  );
+  const [recieptType, setrecieptType] = useState(
+    taxReciept.taxReciept || "5ffb47828f1bc6e77a8791ba"
+  );
   const [option, setOption] = useState();
   const [inputFields, setInputFields] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
@@ -102,43 +93,31 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
   const _setPrice = () => {
     setInputFields({
       ...inputFields,
-      [nameContants.TOTAL]: bill2.totalPrice,
-      [nameContants.TAX]: bill2.tax,
-      [nameContants.SUBTOTAL]: bill2.subTotal,
-      [nameContants.DISCOUNT]: bill2.discount,
+      [nameContants.TOTAL]: totalPrice,
+      [nameContants.TAX]: tax,
+      [nameContants.SUBTOTAL]: subTotal,
+      [nameContants.DISCOUNT]: discount,
     });
   };
 
   const setNote = (val) => {
-    setNotes(val)
-    setBill2((prev) => {
-      prev.notes = val;
-      return prev;
-    });
+    setNotes(val);
   };
 
   const onTaxReciepsChange = async (val) => {
     const taxRecieptId = await service.genTaxReciept(val);
     const { lastRecord, sequense } = taxRecieptId.data;
-    setBill2((prev) => {
-      prev.taxReciept = _setTaxReciept(lastRecord, sequense);
-      prev.taxReciept = _.pick(prev.taxReciept, [
-        "_id",
-        "taxReciept",
-        "type",
-        "sequence",
-        "isUsed",
-      ]);
-      return prev;
-    });
+
+    let temp = _setTaxReciept(lastRecord, sequense);
+    temp = _.pick(temp, ["_id", "taxReciept", "type", "sequence", "isUsed"]);
+
+    setTaxReciept(temp);
+
     setInputFields({ ...inputFields, [nameContants.NCF]: sequense });
   };
 
   const _setClient = (data) => {
-    setBill2((prev) => {
-      prev.client = new ClienModel(data);
-      return prev;
-    });
+    setClient(new ClienModel(data));
   };
 
   const priceChange = (items) => {
@@ -147,7 +126,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
       return { total: 0, subTotal: 0, tax: 0 };
 
     if (items.length === 1) {
-      total = parseFloat(items[0].price);
+      total = parseFloat(items[0].price) * parseFloat(items[0].quantity);
     } else {
       total = items.reduce((a, b) => {
         return a + parseFloat(b.price || 0) * parseInt(b.quantity);
@@ -165,31 +144,21 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
     product.quantity = 1;
     product.price = parseFloat(product.price).toFixed(2);
     setSelectedItems([...selectedItems, product]);
-    setBill2((prev) => {
-      const item = _setDetails(product);
-      prev.details = [...prev.details, item];
-      return prev;
-    });
   };
 
   useEffect(() => {
- 
-    setBill2((prev) => {
-      const priceObj = priceChange(selectedItems);
-
-      prev.totalPrice = priceObj.total;
-      prev.subTotal = priceObj.subTotal;
-      prev.tax = priceObj.tax;
-      return prev;
-    });
+    const { total, subTotal, tax } = priceChange(selectedItems);
+    setTotalPrice(total);
+    setSubTotal(subTotal);
+    setTax(tax);
   }, [selectedItems]);
 
   useEffect(() => {
     _setPrice();
-  }, [bill2.totalPrice,]);
+  }, [totalPrice]);
 
   const handleCellChange = (data) => {
-    if (!data.props || !data.props.value) return;
+    if (!data.props || Number.isNaN(parseInt(data.props.value))) return;
     onTableCellChange(data.id, data.field, data.props.value);
   };
 
@@ -205,51 +174,52 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
 
   const onTableCellChange = (_id, key, value) => {
     const dKey = key === "price" ? "sellPrice" : key;
-    const index = bill2.details.findIndex((item) => item.product === _id);
-    const newElement = bill2.details[index];
+    const index = selectedItems.findIndex((item) => item._id === _id);
     const newElement2 = selectedItems[index];
 
-    newElement[dKey] = parseFloat(value);
     newElement2[key] = parseFloat(value);
 
     const temp = [...selectedItems];
-    temp.splice(index, 1, newElement2)
-    setSelectedItems([...temp])
-    setBill2((prev) => {
-      prev.details.splice(index, 1, newElement);
-      prev.details = [...prev.details];
-      return prev;
-    });
+    temp.splice(index, 1, newElement2);
+    setSelectedItems([...temp]);
   };
 
   const reset = () => {
-    setBill2({
-      createDate: new Date(),
-      payDate: new Date(),
-      totalPrice: 0,
-      subTotal: 0,
-      tax: 0,
-      isCredit: false,
-      client: {}, //done
-      details: [],
-      discount: 0,
-      taxReciept: new TaxRecieptModel("", "", true, ""), //done
-      billNumer: 0,
-      notes: "",
-      amountPaid: 0,
-    });
+    setTotalPrice(0);
+    setSubTotal(0);
+    setTax(0);
+    setClient({});
+    setAmountPaid(0);
+    // setBillNumber
+    setNotes("");
+    setDiscount(0);
+    setTaxReciept(
+      new TaxRecieptModel("", "", "5ffb47828f1bc6e77a8791ba", true, "")
+    );
     setSelectedItems([]);
+  };
+
+  const _setState = (bill) => {
+    setTotalPrice(bill.totalPrice);
+    setSubTotal(bill.subTotal);
+    setTax(bill.tax);
+    setClient(bill.client);
+    setAmountPaid(bill.amountPaid);
+    // setBillNumber
+    setNotes(bill.notes);
+    setDiscount(bill.discount);
+    setTaxReciept(bill.taxReciept);
+    _setPrice()
   };
 
   useEffect(() => {
     if (tabState && tabState[activeTab]?.tabState) {
       const state = tabState[activeTab].tabState;
       setSelectedItems(state.selectedItems);
-      setBill2(state.bill2);
+      _setState(state.bill2);
       setrecieptType(state.recieptType);
-      setNotes(state.notes)
+      setNotes(state.notes);
     }
-    _setPrice();
     service.getTaxReceipt().then((res) => setReciptTypes(res.data));
     service.getLastReciept().then((res) => {
       setInputFields({
@@ -260,6 +230,20 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
     });
   }, []);
 
+  const _createBillObject = () =>
+    createBillObject({
+      totalPrice,
+      subTotal,
+      tax,
+      client,
+      amountPaid,
+      billNumer: billNumber,
+      details: selectedItems,
+      notes,
+      discount,
+      taxReciept,
+    });
+
   const handleCellClick = (params) => {
     if (params.field === "delete") {
       const index = selectedItems.findIndex((x) => x.id === params.row.id);
@@ -267,25 +251,22 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
       temp.splice(index, 1);
 
       setSelectedItems(temp);
-
-      setBill2((prev) => {
-        prev.details.splice(index, 1);
-        prev.details = [...prev.details];
-        return prev;
-      });
     }
   };
 
   const submit = (opt) => {
-    if (selectedItems.length === 0 || !bill2.client.name) {
+    if (selectedItems.length === 0 || !client.name) {
       setValidBill(true);
       return;
     }
+    setBill2(_createBillObject());
     setShowSubmitModal(true);
     setOption(opt);
   };
 
-  const save = async () => {
+  const save = async (val) => {
+    const data= {...bill2}
+    data.amountPaid = val
     if (bill2._id) {
       return await service.saveBill(bill2);
     } else {
@@ -295,12 +276,10 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
 
   const handleSubmit = async (val, conduce, copy) => {
     if (typeof val !== "number") return;
-    setBill2((prev) => {
-      prev.amountPaid = val;
-      return prev;
-    });
 
-    const res = await save();
+    setAmountPaid(val);
+
+    const res = await save(val);
     if (!res.data?._id) return;
     if (option === "print") {
       service.printReciept(res.data._id, conduce, copy);
@@ -312,9 +291,17 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
 
   useEffect(() => {
     dispatch(
-      setTabState({ id: activeTab, tabState: { bill2, selectedItems, recieptType, notes } })
+      setTabState({
+        id: activeTab,
+        tabState: {
+          bill2: _createBillObject(),
+          selectedItems,
+          recieptType,
+          notes,
+        },
+      })
     );
-  }, [bill2, notes, bill2.client, selectedItems, recieptType]);
+  }, [bill2, notes, client, selectedItems, recieptType]);
 
   useEffect(() => {
     onTaxReciepsChange(recieptType);
@@ -353,7 +340,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
           <div className="mb-3">
             <SearchInput
               {...{
-                outerValue: bill2.client,
+                outerValue: client,
                 label: "Cliente",
                 getData: service.getClientByNameOrId,
                 onSelect: _setClient,
@@ -424,7 +411,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
         </Paper>
       </div>
       <SaveModal
-        showPrinterModal={showPrinterModal} 
+        showPrinterModal={showPrinterModal}
         printReciept={() => null}
         print={() => null}
         onClose={closeTab}

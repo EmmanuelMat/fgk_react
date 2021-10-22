@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { InputGroup } from "react-bootstrap";
 import { Form } from "react-bootstrap";
 import "./styles.css";
@@ -14,19 +14,17 @@ const SearchInput = ({
   const [data, setData] = useState([]);
   const [value, setvalue] = useState([]);
 
-  const handleSelect = (val) => {
-    setvalue(val);
-  };
-
-  const fetchData = async (value) => {
+  const fetchData = useCallback((value) => {
     setvalue(value);
-    if (!value) {
-      setData([]);
-    } else {
-      const res = await getData(value, null);
-      setData(res.data);
-    }
-  };
+    setTimeout(async () => {
+      if (!value) {
+        setData([]);
+      } else {
+        const res = await getData(value, null);
+        setData(res.data);
+      }
+    }, 500);
+  });
 
   useEffect(() => {
     if (data.length === 1) {
@@ -36,7 +34,6 @@ const SearchInput = ({
 
   useEffect(() => {
     if (outerValue?.name) {
-      setData([outerValue]);
       setvalue(outerValue.name);
     }
   }, [outerValue]);
@@ -55,7 +52,7 @@ const SearchInput = ({
           onChange={(e) => fetchData(e.target.value)}
           required
           list="data"
-          onSelect={(e) => handleSelect(e.target.value)}
+       
         />
         {data.map ? (
           <datalist id="data">

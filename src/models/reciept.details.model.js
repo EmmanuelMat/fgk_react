@@ -1,8 +1,8 @@
 export default class RecieptDetailsModel {
-    constructor({product, sellPrice, quantity, code}) {
+    constructor({_id, price, quantity, code}) {
       this.code = code;
-      this.product = product;
-      this.sellPrice = sellPrice;
+      this.product = _id;
+      this.sellPrice = price;
       this.quantity = quantity;
     }
   }
