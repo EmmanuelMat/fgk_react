@@ -45,6 +45,7 @@ export default class Bill {
     discount,
     billNumer,
     createDate,
+    amountPaid,
     _id,
   }) {
     details = _.map(details, (item) => {
@@ -64,6 +65,7 @@ export default class Bill {
     this.discount = discount;
     this.billNumer = billNumer;
     this.createDate = createDate;
+    this.amountPaid =amountPaid
   }
 
   setdetails(product) {

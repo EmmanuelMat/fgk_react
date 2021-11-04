@@ -247,13 +247,36 @@ export default class Invoice extends Component {
               colspan="2"
               className="total-line balance"
             >
-              A pagar
+              Efectivo
             </td>
             <td
               style={{ paddingBottom: 1, paddingTop: 1 }}
               className="total-value balance"
             >
-              <div className="due">${bill.balanceDue || 0}</div>
+              <div className="due">${bill.amountPaid || 0}</div>
+            </td>
+          </tr>
+
+          <tr>
+            <td
+              style={{ paddingBottom: 1, paddingTop: 1 }}
+              colspan="2"
+              className="blank"
+            >
+              {" "}
+            </td>
+            <td
+              style={{ paddingBottom: 1, paddingTop: 1 }}
+              colspan="2"
+              className="total-line balance"
+            >
+              Devuelta
+            </td>
+            <td
+              style={{ paddingBottom: 1, paddingTop: 1 }}
+              className="total-value balance"
+            >
+              <div className="due">${(parseFloat(bill.amountPaid) - parseFloat(bill.totalPrice)).toFixed(2)|| 0}</div>
             </td>
           </tr>
         </table>

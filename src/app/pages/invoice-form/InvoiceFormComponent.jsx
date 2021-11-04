@@ -270,9 +270,9 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
     const data= {...bill2}
     data.amountPaid = val
     if (bill2._id) {
-      return await service.saveBill(bill2);
+      return await service.saveBill(data);
     } else {
-      return service.saveBill(bill2);
+      return service.saveBill(data);
     }
   };
 
@@ -285,6 +285,8 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
     if (!res.data?._id) return;
     if (option === "print") {
       service.printReciept(res.data._id, conduce, copy);
+      alert(`Devuelta $${(parseFloat(val) - parseFloat(totalPrice)).toFixed(2)}`)
+      closeTab()
     } else if (option === "save") {
       setShowPrinterModal(true);
       setSavedBillId(res.data._id);
