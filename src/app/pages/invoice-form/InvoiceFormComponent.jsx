@@ -139,11 +139,13 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
 
   const handleProductSelect = (data) => {
     let product = Object.create(data);
-    if (!product._id) return;
+    console.log(selectedItems.some(item => item._id === product._id))
+    if (!product._id || selectedItems.some(item =>  item._id === product._id)) return;
     product.id = product._id;
     product.quantity = 1;
     product.price = parseFloat(product.price).toFixed(2);
     setSelectedItems([...selectedItems, product]);
+    closeModalRef.current.click();
   };
 
   useEffect(() => {
