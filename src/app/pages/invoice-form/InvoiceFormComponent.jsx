@@ -14,6 +14,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import SaveIcon from "@material-ui/icons/Save";
 import PrintOutlinedIcon from "@material-ui/icons/PrintOutlined";
 import service from "../billing/service";
+import serviceClient from "../clients/service";
 import SearchInput from "../../partials/content/custom-components/SearchInput";
 import DataGridComponent from "../../partials/content/custom-components/DataGridComponent";
 import _helpers from "../../helpers/_helpers";
@@ -346,7 +347,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
               {...{
                 outerValue: client,
                 label: "Cliente",
-                getData: service.getClientByNameOrId,
+                getData:  serviceClient.getClientByNameOrId,
                 onSelect: _setClient,
               }}
             />

@@ -20,8 +20,8 @@ const SearchInput = ({
       if (!value) {
         setData([]);
       } else {
-        const res = await getData(value, null);
-        setData(res.data);
+        const res = await getData(0, 10, value);
+        setData(res.data.data);
       }
     }, 500);
   });
