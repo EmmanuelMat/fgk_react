@@ -9,9 +9,6 @@ export const useForm = (data, submitCallBack) => {
     setstate({});
   };
 
-  useEffect(() => {
-    console.log(state);
-  }, [state]);
 
   const handleChange = (e) => {
     if (e.persist) e.persist();

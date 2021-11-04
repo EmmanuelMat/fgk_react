@@ -4,6 +4,7 @@ export const TYPE = {
     NUMBER: "number",
     EMAIL: "email",
     PASSWORD: "password",
-    CHECKBOX: "checkbox"
+    CHECKBOX: "checkbox",
+    TEXT_AREA: "textarea"
   }
 

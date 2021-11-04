@@ -92,9 +92,10 @@ function TabsBaseComponent() {
 
   const handleTabClose = (event, id) => {
     event.persist();
-    event.stopPropagation();
-    const index = tabs.findIndex((tab) => tab.id != id);
+    event.nativeEvent.stopImmediatePropagation();
+    const index = tabs.findIndex((tab) => tab.id === id);
     let newTabs = tabs;
+ 
     newTabs.splice(index, 1);
     dispatch(removeTab(newTabs));
     if (!tabs[index - 1]) return;
@@ -102,7 +103,7 @@ function TabsBaseComponent() {
   };
 
   const closeTab = () => {
-    const index = tabs.findIndex((tab) => tab.id != activeTab);
+    const index = tabs.findIndex((tab) => tab.id === activeTab);
     let newTabs = tabs;
     newTabs.splice(index, 1);
     dispatch(removeTab(newTabs));
@@ -129,7 +130,7 @@ function TabsBaseComponent() {
                 wrapped
                 {...a11yProps(item.id)}
                 icon={
-                  <a onClick={(e) => handleTabClose(e, item.id)}>x</a>
+                  <a className="close-button" onClick={(e) => handleTabClose(e, item.id)}>x</a>
                 }
               />
             );

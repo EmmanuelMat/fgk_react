@@ -49,7 +49,7 @@ const CustomTable = ({ data, getData, onClick, columns, SearchPannel }) => {
   const classes = useStyles();
   const [page, setPage] = React.useState(parseInt(0));
   const [rowsPerPage, setRowsPerPage] = React.useState(
-    parseInt(data.count?.pageSize)
+    parseInt(data.count?.pageSize || 10)
   );
   const [filter, seFilter] = React.useState(" ");
   function handleChangeRowsPerPage(event) {

@@ -1,7 +1,7 @@
 const URLS = {
   PROVIDERS: "/providers",
   PRODUCTS: "/products",
-  CLIENS: "/clients",
+  CLIEN: "/clients",
   CLIEN_BY: "/clients/by",
   TAX_RECIPT: "/taxreciept",
   TAX_RECIPT_LAST: "/taxreciept/last",
