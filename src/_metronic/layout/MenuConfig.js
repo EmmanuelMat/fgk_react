@@ -228,24 +228,34 @@ export default {
       // },
       { section: "Facturación" },
       {
-        title: "Factura",
+        title: "Facturar",
         root: true,
         bullet: "dot",
         icon: "flaticon2-browser-2",
         submenu: [
           {
-            title: "Facturar",
-            bullet: "dot",
-            submenu: [
-              {
-                title: "Lista de Facturas",
-                page: "billing/list",
-              },
-              {
-                title: "Nueva Factura",
-                page: "billing",
-              },
-            ],
+            title: "Lista de Facturas",
+            page: "billing/list",
+          },
+          {
+            title: "Nueva Factura",
+            page: "billing",
+          },
+        ],
+      },
+      {
+        title: "Clientes",
+        root: true,
+        bullet: "dot",
+        icon: "flaticon2-browser-2",
+        submenu: [
+          {
+            title: "Lista de Clientes",
+            page: "client/list",
+          },
+          {
+            title: "Nuevo Cliente",
+            page: "client/form",
           },
         ],
       },
@@ -257,23 +267,15 @@ export default {
         icon: "flaticon2-browser-2",
         submenu: [
           {
-            title: "Producto",
-            bullet: "dot",
-            submenu: [
-              {
-                title: "Lista de productos",
-                page: "product/list",
-              },
-              {
-                title: "Nuevo Producto",
-                page: "product/form",
-              },
-            ],
+            title: "Lista de productos",
+            page: "product/list",
+          },
+          {
+            title: "Nuevo Producto",
+            page: "product/form",
           },
         ],
       },
-
     ],
   },
-  
 };

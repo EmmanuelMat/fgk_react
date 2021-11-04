@@ -5,6 +5,7 @@ import Dashboard from "./Dashboard";
 import DocsPage from "./docs/DocsPage";
 import { LayoutSplashScreen } from "../../../_metronic";
 import ProductsRouter from "../product/ProductsRouter";
+import ClientRouter from "../clients/clientrouter";
 import { BillingRouter } from "../billing/BillingRouter";
 import TabsBaseComponent from "./tabs/TabsBaseComponent";
 const GoogleMaterialPage = lazy(() =>
@@ -31,6 +32,7 @@ export default function HomePage() {
           <Route path="/builder" component={Builder} />
           <Route path="/billing" component={BillingRouter} />
           <Route path="/product" component={ProductsRouter} />
+          <Route path="/client" component={ClientRouter} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/google-material" component={GoogleMaterialPage} />
           <Route path="/react-bootstrap" component={ReactBootstrapPage} />
