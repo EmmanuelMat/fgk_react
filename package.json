@@ -2,7 +2,7 @@
   "name": "demo1",
   "version": "6.1.5",
   "private": true,
-  "homepage": "https://localhost:3000/",
+  "homepage": "",
   "scripts": {
     "serve": "cp-cli build _site/metronic/preview/react && serve",
     "start": "react-scripts start",
