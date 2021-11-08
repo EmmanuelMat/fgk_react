@@ -29,7 +29,7 @@ export default function DataGridComponent({
   const handleEditRowsModelChange = (newModel) => {
     const updatedModel = { ...newModel.model };
     Object.keys(updatedModel).forEach((id) => {
-      const reg = /^[1-9][0-9]*$/;
+      const reg =/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/;
       if (updatedModel[id].price) {
         const isValid2 = reg.test(updatedModel[id].price?.value);
 
