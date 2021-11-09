@@ -130,7 +130,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
       total = parseFloat(items[0].price) * parseFloat(items[0].quantity);
     } else {
       total = items.reduce((a, b) => {
-        return a + parseFloat(b.price || 0) * parseInt(b.quantity);
+        return a + parseFloat(b.price || 0) * parseFloat(b.quantity);
       }, 0);
     }
     const subTotal = total / 1.18;
