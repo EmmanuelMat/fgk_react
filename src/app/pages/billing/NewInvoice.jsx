@@ -13,7 +13,7 @@ export const NewInvoiceRefirect = () => {
 
 export const NewInvoice = () => {
  const dispatch = useDispatch();
-  useEffect(() => {
+  useEffect(() => { 
     dispatch(
       addTab({
         title: "Nueva factura",

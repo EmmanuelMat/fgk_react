@@ -11,7 +11,7 @@ import {
 import ReactDOM from "react-dom";
 import "./styles.css";
 import { addTab, removeTab, setActiveTab } from "../../../actions/tabsAction";
-import { useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -53,11 +53,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TabsBaseComponent() {
+function TabsBaseComponent({activeTab, tabs}) {
   const classes = useStyles();
-  const tabs = useSelector((state) => state.tabs.tabs);
-  const activeTab = useSelector((state) => state.tabs.active);
+  
 
+  const [localTabs, setLocalTabs] = React.useState(tabs);
   const [value, setValue] = React.useState();
   const [container, setContainer] = React.useState(
     document.createElement("div")
@@ -69,6 +69,7 @@ function TabsBaseComponent() {
   const dispatch = useDispatch();
 
   const handleChange = (event, newValue) => {
+    event.persist()
     setValue(newValue);
     dispatch(setActiveTab(newValue));
   };
@@ -85,31 +86,17 @@ function TabsBaseComponent() {
   }, []);
 
   useEffect(() => {
-    if (tabs.length !== 0) {
-      setValue(tabs[0].id);
-    }
-  }, []);
+    setLocalTabs(tabs)
+  }, [tabs])
 
   const handleTabClose = (event, id) => {
-    event.persist();
-    event.nativeEvent.stopImmediatePropagation();
     const index = tabs.findIndex((tab) => tab.id === id);
     let newTabs = tabs;
- 
     newTabs.splice(index, 1);
     dispatch(removeTab(newTabs));
-    if (!tabs[index - 1]) return;
-    setValue(tabs[index - 1].id);
+
   };
 
-  const closeTab = () => {
-    const index = tabs.findIndex((tab) => tab.id === activeTab);
-    let newTabs = tabs;
-    newTabs.splice(index, 1);
-    dispatch(removeTab(newTabs));
-    if (!tabs[index - 1]) return;
-    setValue(tabs[index - 1].id);
-  }
 
   return ReactDOM.createPortal(
     <div className={`${classes.root} tabs-component`}>
@@ -121,7 +108,7 @@ function TabsBaseComponent() {
           onChange={handleChange}
           aria-label="wrapped label tabs example"
         >
-          {tabs.map((item) => {
+          {localTabs.map((item) => {
             return (
               <Tab
                 key={item.id}
@@ -139,7 +126,8 @@ function TabsBaseComponent() {
       </AppBar>
       {ReactDOM.createPortal(
         <div>
-          {tabs.map((item, i) => {
+          {localTabs.map((item, i) => {
+           
             return (
               <TabPanel
                 className="tab-panel"
@@ -147,7 +135,7 @@ function TabsBaseComponent() {
                 value={value}
                 index={item.id}
               >
-                <div className="m-4">{item.component(item.id, closeTab)}</div>
+                <div className="m-4">{item.component(item.id, handleTabClose)}</div>
               </TabPanel>
             );
           })}
@@ -158,5 +146,9 @@ function TabsBaseComponent() {
     container
   );
 }
+const mapStateToProps = (state) => ({
+  tabs:state.tabs.tabs,
+  activeTab: state.tabs.active
+});
 
-export default TabsBaseComponent;
+export default connect(mapStateToProps)(TabsBaseComponent); ;

@@ -255,7 +255,7 @@ export default {
           },
           {
             title: "Nuevo Cliente",
-            page: "client/form",
+            page: "client",
           },
         ],
       },
