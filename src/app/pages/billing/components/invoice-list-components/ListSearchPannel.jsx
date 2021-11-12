@@ -7,7 +7,7 @@ import {
   makeStyles,
   Select,
 } from "@material-ui/core";
-import service from "../../service";
+import service from "../../../clients/service";
 import SearchInput from "../../../../partials/content/custom-components/SearchInput";
 
 const useStyles = makeStyles((theme) => ({
