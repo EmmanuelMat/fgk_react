@@ -29,7 +29,7 @@ function InvoiceList() {
   };
 
   const printRef = useRef();
-  const getInvoices = async (pageNumber=0, pageSize=10, name) => {
+  const getInvoices = async (pageNumber = 0, pageSize = 10, name) => {
     let invoices = await service.getInvoices(pageNumber, pageSize, name);
     invoices = invoices.data;
     setInvoices(invoices);
@@ -46,7 +46,6 @@ function InvoiceList() {
     setInvoices(invoices);
   };
 
-
   const getInvoicesByBillNUmber = async (billNumber) => {
     if (!billNumber) {
       getInvoices();
@@ -56,7 +55,7 @@ function InvoiceList() {
     invoices = invoices.data;
     setInvoices(invoices);
   };
-  
+
   useEffect(() => {
     getInvoices();
   }, []);
@@ -71,7 +70,10 @@ function InvoiceList() {
           getData={getInvoices}
           columns={columns}
           SearchPannel={() => (
-            <ListSearchPannel getInvoicesByBillNUmber={getInvoicesByBillNUmber} getInvoicesByClientId={getInvoicesByClientId} />
+            <ListSearchPannel
+              getInvoicesByBillNUmber={getInvoicesByBillNUmber}
+              getInvoicesByClientId={getInvoicesByClientId}
+            />
           )}
         />
         <CustomModal
@@ -88,10 +90,24 @@ function InvoiceList() {
             title: "Imprimir",
             onClick: () => printRef.current.click(),
           }}
-          secundaryBtn={{
-            title: "Recibo",
-            onClick: () => service.printReciept(_id),
-          }}
+          secundaryBtns={[
+            {
+              title: "Conduce",
+              variant: "primary",
+              onClick: () => service.printConduce(_id),
+            },
+            {
+              title: "Copia",
+              variant: "primary",
+              onClick: () => service.printCopy(_id),
+            },
+            {
+              title: "Recibo",
+              variant: "primary",
+
+              onClick: () => service.printReciept(_id),
+            },
+          ]}
         />
       </ReactIf>
     </>

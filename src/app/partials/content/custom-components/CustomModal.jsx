@@ -6,13 +6,13 @@ export default React.forwardRef(function CustomModal(
     size,
     openModalBtn,
     primaryBtn,
-    secundaryBtn,
+    secundaryBtns,
     children,
     title,
     onClose,
     showModalFormOutSide,
     closeOnSubmit = true,
-    onShow = () => {}
+    onShow = () => {},
   },
   ref
 ) {
@@ -23,7 +23,7 @@ export default React.forwardRef(function CustomModal(
     if (onClose) onClose();
   };
   const handleShow = () => {
-    onShow()
+    onShow();
     setShow(true);
   };
 
@@ -32,7 +32,6 @@ export default React.forwardRef(function CustomModal(
       handleShow();
       return;
     }
-    
   }, [showModalFormOutSide]);
 
   return (
@@ -48,9 +47,9 @@ export default React.forwardRef(function CustomModal(
             Close
           </Button>
 
-          {secundaryBtn && (
+          {secundaryBtns.map((secundaryBtn, i) => (
             <Button
-              variant="primary"
+              variant={secundaryBtn.variant}
               onClick={() => {
                 secundaryBtn.onClick();
                 handleClose();
@@ -58,7 +57,7 @@ export default React.forwardRef(function CustomModal(
             >
               {secundaryBtn.title}
             </Button>
-          )}
+          ))}
 
           {primaryBtn && (
             <Button
