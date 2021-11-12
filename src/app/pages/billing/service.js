@@ -38,7 +38,7 @@ function printCopy(id) {
 }
 
 function printConduce(id) {
-  return axios.get(urlsApiContant.URLS.PRINT_RECIEPT_COPY, {
+  return axios.get(urlsApiContant.URLS.PRINT_RECIEPT_CONDUCE, {
     params: { id },
   });
 }
