@@ -6,7 +6,7 @@ export default React.forwardRef(function CustomModal(
     size,
     openModalBtn,
     primaryBtn,
-    secundaryBtns,
+    secundaryBtns=[],
     children,
     title,
     onClose,

@@ -16,10 +16,10 @@ const SaveModal = forwardRef(({ printReciept, print, onClose, _id, showPrinterMo
         title: "Imprimir",
         onClick: print,
       }}
-      secundaryBtn={{
+      secundaryBtn={[{
         title: "Recibo",
         onClick: printReciept,
-      }}
+      }]}
     />
   );
 });

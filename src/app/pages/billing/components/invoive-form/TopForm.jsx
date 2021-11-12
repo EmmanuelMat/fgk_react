@@ -573,10 +573,10 @@ export default function TopForm({
                         title: "Imprimir",
                         onClick: () => printRef.current.click(),
                       }}
-                      secundaryBtn={{
+                      secundaryBtn={[{
                         title: "Recibo",
                         onClick: () => printReciept(_id),
-                      }}
+                      }]}
                     />
                     <Button
                       type="submit"
