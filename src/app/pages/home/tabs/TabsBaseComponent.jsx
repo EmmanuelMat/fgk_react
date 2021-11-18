@@ -97,6 +97,8 @@ function TabsBaseComponent({activeTab, tabs}) {
 
   };
 
+  const closeTab = handleTabClose
+
 
   return ReactDOM.createPortal(
     <div className={`${classes.root} tabs-component`}>
@@ -135,7 +137,7 @@ function TabsBaseComponent({activeTab, tabs}) {
                 value={value}
                 index={item.id}
               >
-                <div className="m-4">{item.component(item.id, handleTabClose)}</div>
+                <div className="m-4">{item.component(item.id, closeTab)}</div>
               </TabPanel>
             );
           })}
