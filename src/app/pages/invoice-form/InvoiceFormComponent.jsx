@@ -23,7 +23,7 @@ import NoteModal from "../common/NoteModal";
 import ProductModal from "./components/ProductModal";
 import SaveModal from "./components/SaveModal";
 import { connect, useDispatch } from "react-redux";
-import { setTabState } from "../../actions/tabsAction";
+import { setTabState, setTabTitle } from "../../actions/tabsAction";
 import "./styles.css";
 import FormContainer from "./components/FormContainer";
 import SubmitModal from "./components/SubmitModal";
@@ -118,6 +118,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
   };
 
   const _setClient = (data) => {
+    dispatch(setTabTitle(activeTab, data.name));
     setClient(new ClienModel(data));
   };
 
@@ -140,8 +141,9 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
 
   const handleProductSelect = (data) => {
     let product = Object.create(data);
-    console.log(selectedItems.some(item => item._id === product._id))
-    if (!product._id || selectedItems.some(item =>  item._id === product._id)) return;
+    console.log(selectedItems.some((item) => item._id === product._id));
+    if (!product._id || selectedItems.some((item) => item._id === product._id))
+      return;
     product.id = product._id;
     product.quantity = 1;
     product.price = parseFloat(product.price).toFixed(2);
@@ -212,7 +214,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
     setNotes(bill.notes);
     setDiscount(bill.discount);
     setTaxReciept(bill.taxReciept);
-    _setPrice()
+    _setPrice();
   };
 
   useEffect(() => {
@@ -268,8 +270,8 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
   };
 
   const save = async (val) => {
-    const data= {...bill2}
-    data.amountPaid = val
+    const data = { ...bill2 };
+    data.amountPaid = val;
     if (bill2._id) {
       return await service.saveBill(data);
     } else {
@@ -286,8 +288,10 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
     if (!res.data?._id) return;
     if (option === "print") {
       service.printReciept(res.data._id, conduce, copy);
-      alert(`Devuelta $${(parseFloat(val) - parseFloat(totalPrice)).toFixed(2)}`)
-      closeTab()
+      alert(
+        `Devuelta $${(parseFloat(val) - parseFloat(totalPrice)).toFixed(2)}`
+      );
+      closeTab(null, activeTab);
     } else if (option === "save") {
       setShowPrinterModal(true);
       setSavedBillId(res.data._id);
@@ -347,7 +351,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
               {...{
                 outerValue: client,
                 label: "Cliente",
-                getData:  serviceClient.getClientByNameOrId,
+                getData: serviceClient.getClientByNameOrId,
                 onSelect: _setClient,
               }}
             />
@@ -419,7 +423,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
         showPrinterModal={showPrinterModal}
         printReciept={() => null}
         print={() => null}
-        onClose={closeTab}
+        onClose={() => closeTab(null, activeTab)}
         _id={savedBillId}
         ref={printRef}
       />
@@ -429,7 +433,7 @@ const InvoiceFormComponent = ({ activeTab, tabState, closeTab }) => {
           setShowSubmitModal,
           showModalFormOutSide: showSubmitModal,
           bill: bill2,
-          onClose: () => closeTab(),
+          onClose: () => closeTab(null, activeTab),
           onSave: handleSubmit,
         }}
       />
