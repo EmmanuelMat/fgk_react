@@ -53,9 +53,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TabsBaseComponent({activeTab, tabs}) {
+function TabsBaseComponent({ activeTab, tabs }) {
   const classes = useStyles();
-  
 
   const [localTabs, setLocalTabs] = React.useState(tabs);
   const [value, setValue] = React.useState();
@@ -69,7 +68,7 @@ function TabsBaseComponent({activeTab, tabs}) {
   const dispatch = useDispatch();
 
   const handleChange = (event, newValue) => {
-    event.persist()
+    event.persist();
     setValue(newValue);
     dispatch(setActiveTab(newValue));
   };
@@ -86,18 +85,37 @@ function TabsBaseComponent({activeTab, tabs}) {
   }, []);
 
   useEffect(() => {
-    setLocalTabs(tabs)
-  }, [tabs])
+    setLocalTabs(tabs);
+  }, [tabs]);
 
   const handleTabClose = (event, id) => {
     const index = tabs.findIndex((tab) => tab.id === id);
     let newTabs = tabs;
     newTabs.splice(index, 1);
     dispatch(removeTab(newTabs));
-
+    setActiveTAbOnCloseTab(index);
+  
   };
 
-  const closeTab = handleTabClose
+  const closeTab = () => {
+    const index = tabs.findIndex((tab) => tab.id === activeTab);
+    let newTabs = tabs;
+    newTabs.splice(index, 1);
+    dispatch(removeTab(newTabs));
+    setActiveTAbOnCloseTab(index);
+  };
+
+
+  const setActiveTAbOnCloseTab = (index) => {
+    if (!tabs[index - 1]) {
+      setValue(null);
+      dispatch(setActiveTab(null));
+      return;
+    }
+
+    setValue(tabs[index - 1].id);
+    dispatch(setActiveTab(tabs[index - 1].id));
+  }
 
 
   return ReactDOM.createPortal(
@@ -119,7 +137,12 @@ function TabsBaseComponent({activeTab, tabs}) {
                 wrapped
                 {...a11yProps(item.id)}
                 icon={
-                  <a className="close-button" onClick={(e) => handleTabClose(e, item.id)}>x</a>
+                  <a
+                    className="close-button"
+                    onClick={(e) => handleTabClose(e, item.id)}
+                  >
+                    x
+                  </a>
                 }
               />
             );
@@ -129,7 +152,6 @@ function TabsBaseComponent({activeTab, tabs}) {
       {ReactDOM.createPortal(
         <div>
           {localTabs.map((item, i) => {
-           
             return (
               <TabPanel
                 className="tab-panel"
@@ -149,8 +171,8 @@ function TabsBaseComponent({activeTab, tabs}) {
   );
 }
 const mapStateToProps = (state) => ({
-  tabs:state.tabs.tabs,
-  activeTab: state.tabs.active
+  tabs: state.tabs.tabs,
+  activeTab: state.tabs.active,
 });
 
-export default connect(mapStateToProps)(TabsBaseComponent); ;
+export default connect(mapStateToProps)(TabsBaseComponent);
