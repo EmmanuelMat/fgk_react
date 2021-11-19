@@ -4,6 +4,7 @@ import {
   REMOVE_TAB,
   ACTIVE_TAB,
   SET_UNACTIVE_TAB_STATE,
+  SET_TAB_TITLE,
 } from "../constants/storeTypes";
 
 export const addTab = (data) => {
@@ -36,3 +37,8 @@ export const setTabState = (tabState) => {
     payload: tabState,
   };
 };
+
+export const setTabTitle = (id, title) => ({
+  type: SET_TAB_TITLE,
+  payload: { id, title },
+});
