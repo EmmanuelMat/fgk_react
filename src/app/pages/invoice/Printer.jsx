@@ -39,7 +39,7 @@ const Printer = forwardRef(({ _id }, ref) => {
         content={() => componentRef.current.lastChild}
       />
       <div ref={componentRef}>
-        <Invoice bill={bill} />
+        <InvoiceKadehe bill={bill} />
       </div>
     </ReactIf>
   );
